@@ -30,3 +30,26 @@ Users of this library will provide their own implemenations of these interfaces 
 This project is built using Maven.
 
     mvn install 
+      
+## Using
+
+1.  Implement your own CouchbaseBehavior
+
+    public class MyCustomCouchbaseBehavior extends CouchbaseBehavior { ... }
+
+2.  Implement your own CAPIBehavior
+
+    public class MyCustomCAPIBehavior extends CAPIBehavior { ... }
+
+3.  Create instances of #1 and #2
+
+    CouchbaseBehavior couchbaseBehavior = new MyCustomCouchbaseBehavior();
+    CAPIBehavior capiBehavior = new MyCustomCAPIBehavior();
+
+4.  Start a CAPIServer
+
+    CAPIServer capiServer = new CAPIServer(capiBehavior, couchbaseBehavior);
+    capiServer.start();    
+
+By default this will start a server bound to 0.0.0.0 on an ephemeral port.  If you'd like to bind to a different interface or a particular port, there are alternate constructors available.
+    

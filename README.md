@@ -33,23 +33,23 @@ This project is built using Maven.
       
 ## Using
 
-1.  Implement your own CouchbaseBehavior
+-  Implement your own CouchbaseBehavior
 
 ```java
     public class MyCustomCouchbaseBehavior implements CouchbaseBehavior { ... }
 ```
-2.  Implement your own CAPIBehavior
+-  Implement your own CAPIBehavior
 
 ```java
     public class MyCustomCAPIBehavior implements CAPIBehavior { ... }
 ```
-3.  Create instances of #1 and #2
+-  Create instances of #1 and #2
 
 ```java
     CouchbaseBehavior couchbaseBehavior = new MyCustomCouchbaseBehavior();
     CAPIBehavior capiBehavior = new MyCustomCAPIBehavior();
 ```
-4.  Start a CAPIServer
+-  Start a CAPIServer
 
 ```java
     CAPIServer capiServer = new CAPIServer(capiBehavior, couchbaseBehavior);

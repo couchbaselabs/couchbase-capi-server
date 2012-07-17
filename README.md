@@ -35,21 +35,29 @@ This project is built using Maven.
 
 1.  Implement your own CouchbaseBehavior
 
-    public class MyCustomCouchbaseBehavior extends CouchbaseBehavior { ... }
+```java
+    public class MyCustomCouchbaseBehavior implements CouchbaseBehavior { ... }
+```
 
 2.  Implement your own CAPIBehavior
 
-    public class MyCustomCAPIBehavior extends CAPIBehavior { ... }
+```java
+    public class MyCustomCAPIBehavior implements CAPIBehavior { ... }
+```
 
 3.  Create instances of #1 and #2
 
+```java
     CouchbaseBehavior couchbaseBehavior = new MyCustomCouchbaseBehavior();
     CAPIBehavior capiBehavior = new MyCustomCAPIBehavior();
+```
 
 4.  Start a CAPIServer
 
+```java
     CAPIServer capiServer = new CAPIServer(capiBehavior, couchbaseBehavior);
-    capiServer.start();    
+    capiServer.start();
+```    
 
 By default this will start a server bound to 0.0.0.0 on an ephemeral port.  If you'd like to bind to a different interface or a particular port, there are alternate constructors available.
     

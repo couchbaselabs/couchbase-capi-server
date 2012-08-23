@@ -7,9 +7,13 @@ public interface CouchbaseBehavior {
 
     List<String> getPools();
 
+    String getPoolUUID(String pool);
+
     Map<String, Object> getPoolDetails(String pool);
 
     List<String> getBucketsInPool(String pool);
+
+    String getBucketUUID(String pool, String bucket);
 
     List<Object> getNodesServingBucket(String pool, String bucket);
 }

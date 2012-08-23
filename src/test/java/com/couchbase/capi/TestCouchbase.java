@@ -1,5 +1,6 @@
 package com.couchbase.capi;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 
 public class TestCouchbase extends CAPITestCase {
 
@@ -39,7 +43,7 @@ public class TestCouchbase extends CAPITestCase {
         Assert.assertTrue(details.containsKey("pools"));
         Assert.assertEquals(1, details.get("pools").size());
         Assert.assertEquals("default", details.get("pools").get(0).get("name"));
-        Assert.assertEquals("/pools/default", details.get("pools").get(0).get("uri"));
+        Assert.assertEquals("/pools/default?uuid=00000000000000000000000000000000", details.get("pools").get(0).get("uri"));
 
         client.getConnectionManager().shutdown();
     }
@@ -47,10 +51,27 @@ public class TestCouchbase extends CAPITestCase {
     public void testPool() throws Exception {
         HttpClient client = new DefaultHttpClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default", port));
-
+        // first access the pool with its uuid
+        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default?uuid=00000000000000000000000000000000", port));
         HttpResponse response = client.execute(request);
+        validateSuccessfulPoolResponse(response);
 
+        // now access it with the wrong uuid
+        request = new HttpGet(String.format("http://localhost:%d/pools/default?uuid=00000000000000000000000000000001", port));
+        response = client.execute(request);
+        validateMissingPoolResponse(response);
+
+
+        client.getConnectionManager().shutdown();
+    }
+
+    protected void validateMissingPoolResponse(HttpResponse response) throws IOException {
+        Assert.assertEquals(404, response.getStatusLine().getStatusCode());
+        EntityUtils.consume(response.getEntity());
+    }
+
+    protected void validateSuccessfulPoolResponse(HttpResponse response)
+            throws IOException, JsonParseException, JsonMappingException {
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
 
         HttpEntity entity = response.getEntity();
@@ -67,18 +88,32 @@ public class TestCouchbase extends CAPITestCase {
 
         Assert.assertTrue(details.containsKey("buckets"));
         Assert.assertTrue(details.get("buckets").containsKey("uri"));
-        Assert.assertEquals("/pools/default/buckets", details.get("buckets").get("uri"));
-
-        client.getConnectionManager().shutdown();
+        Assert.assertEquals("/pools/default/buckets?uuid=00000000000000000000000000000000", details.get("buckets").get("uri"));
     }
 
     public void testPoolBuckets() throws Exception {
         HttpClient client = new DefaultHttpClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets", port));
-
+        // first access the buckets list with the correct uuid
+        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets?uuid=00000000000000000000000000000000", port));
         HttpResponse response = client.execute(request);
+        validateSuccessfulBucketsResponse(response);
 
+        // now access it with the wrong uuid
+        request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets?uuid=00000000000000000000000000000001", port));
+        response = client.execute(request);
+        validateMissingBucketsResponse(response);
+
+        client.getConnectionManager().shutdown();
+    }
+
+    protected void validateMissingBucketsResponse(HttpResponse response) throws IOException {
+        Assert.assertEquals(404, response.getStatusLine().getStatusCode());
+        EntityUtils.consume(response.getEntity());
+    }
+
+    protected void validateSuccessfulBucketsResponse(HttpResponse response)
+            throws IOException, JsonParseException, JsonMappingException {
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
 
         HttpEntity entity = response.getEntity();
@@ -95,20 +130,37 @@ public class TestCouchbase extends CAPITestCase {
 
         Assert.assertEquals(1, responseObject.size());
         Assert.assertEquals("default", responseObject.get(0).get("name"));
-        Assert.assertEquals("/pools/default/buckets/default", responseObject.get(0).get("uri"));
-
-
-
-        client.getConnectionManager().shutdown();
+        Assert.assertEquals("/pools/default/buckets/default?bucket_uuid=00000000000000000000000000000000", responseObject.get(0).get("uri"));
     }
 
     public void testPoolBucketDetails() throws Exception {
         HttpClient client = new DefaultHttpClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/default", port));
-
+        // first access the bucket with the correct bucket_uuid
+        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/default?bucket_uuid=00000000000000000000000000000000", port));
         HttpResponse response = client.execute(request);
+        validateSuccessfulBucketResponse(response);
 
+        // now access the bucket with the wrong bucket_uuid
+        request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/default?bucket_uuid=00000000000000000000000000000001", port));
+        response = client.execute(request);
+        validateMissingBucketResponse(response);
+
+        // now access a non-existant bucket
+        request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/does_not_exist", port));
+        response = client.execute(request);
+        validateMissingBucketResponse(response);
+
+        client.getConnectionManager().shutdown();
+    }
+
+    protected void validateMissingBucketResponse(HttpResponse response) throws IOException {
+        Assert.assertEquals(404, response.getStatusLine().getStatusCode());
+        EntityUtils.consume(response.getEntity());
+    }
+
+    protected void validateSuccessfulBucketResponse(HttpResponse response)
+            throws IOException, JsonParseException, JsonMappingException {
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
 
         HttpEntity entity = response.getEntity();
@@ -133,8 +185,6 @@ public class TestCouchbase extends CAPITestCase {
         Assert.assertEquals(2, servers.size());
         List<Object> vbuckets = (List<Object>)serverMap.get("vBucketMap");
         Assert.assertEquals(1024, vbuckets.size());
-
-        client.getConnectionManager().shutdown();
     }
 
 }

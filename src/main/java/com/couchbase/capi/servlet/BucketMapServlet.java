@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,10 +71,12 @@ public class BucketMapServlet extends HttpServlet {
         OutputStream os = resp.getOutputStream();
 
         if (bucket == null || bucket.equals("/")) {
-            executeBucketsRequest(os, "default");
+            String uuid = req.getParameter("uuid");
+            executeBucketsRequest(resp, os, "default", uuid);
         } else {
+            String bucketUUID = req.getParameter("bucket_uuid");
             bucket = getDatabaseNameFromPath(removePathSuffix(bucket, "/"));
-            executeBucketRequest(req, os, "default", bucket);
+            executeBucketRequest(resp, os, "default", bucket, bucketUUID);
         }
     }
 
@@ -83,22 +87,43 @@ public class BucketMapServlet extends HttpServlet {
      * @param os
      * @throws IOException
      */
-    protected void executeBucketsRequest(OutputStream os, String pool) throws IOException {
+    protected void executeBucketsRequest(HttpServletResponse resp, OutputStream os, String pool, String uuid) throws IOException {
         logger.trace("asked for bucket list");
 
         List<Object> buckets = new ArrayList<Object>();
 
         List<String> bucketNames = couchbaseBehavior.getBucketsInPool(pool);
 
-        for (String bucketName : bucketNames) {
-
-            Map<String, Object> bucket = new HashMap<String, Object>();
-            bucket.put("name", bucketName);
-            bucket.put("uri", String.format("/pools/default/buckets/%s", bucketName));
-            buckets.add(bucket);
+        if(uuid != null) {
+            //if a uuid was provided make sure it matches for this pool
+            String poolUUID = couchbaseBehavior.getPoolUUID(pool);
+            if(!uuid.equals(poolUUID)) {
+                resp.setStatus(404);
+                os.write("Cluster uuid does not match the requested.".getBytes());
+                os.close();
+            } else {
+                formatBuckets(resp, os, pool, buckets, bucketNames);
+            }
+        } else {
+            formatBuckets(resp, os, pool, buckets, bucketNames);
         }
+    }
 
-        mapper.writeValue(os, buckets);
+    protected void formatBuckets(HttpServletResponse resp, OutputStream os, String pool,
+            List<Object> buckets, List<String> bucketNames) throws IOException,
+            JsonGenerationException, JsonMappingException {
+        if(bucketNames != null) {
+            for (String bucketName : bucketNames) {
+
+                Map<String, Object> bucket = new HashMap<String, Object>();
+                bucket.put("name", bucketName);
+                bucket.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucketName, couchbaseBehavior.getBucketUUID(pool, bucketName)));
+                buckets.add(bucket);
+            }
+            mapper.writeValue(os, buckets);
+        } else {
+            resp.setStatus(404);
+        }
     }
 
     /**
@@ -109,37 +134,61 @@ public class BucketMapServlet extends HttpServlet {
      * @param bucket
      * @throws IOException
      */
-    protected void executeBucketRequest(HttpServletRequest req, final OutputStream os,
-            final String pool, final String bucket) throws IOException {
+    protected void executeBucketRequest(HttpServletResponse resp, final OutputStream os,
+            final String pool, final String bucket, String bucketUUID) throws IOException {
 
         List<Object> nodes = couchbaseBehavior.getNodesServingBucket(pool, bucket);
 
-        List<Object> serverList = new ArrayList<Object>();
-        for (Object node : nodes) {
-            Map<String, Object> nodeObj = (Map<String, Object>)node;
-            serverList.add(nodeObj.get("hostname"));
+        String actualBucketUUID = couchbaseBehavior.getBucketUUID(pool, bucket);
+        if(bucketUUID != null) {
+            //if a bucket uuid is provided, make sure it matches the buckets uuid
+            if(!bucketUUID.equals(actualBucketUUID)) {
+                resp.setStatus(404);
+                os.write("Bucket uuid does not match the requested.".getBytes());
+                os.close();
+            } else {
+                formatBucket(resp, os, bucket, nodes, actualBucketUUID);
+            }
+        } else {
+            formatBucket(resp, os, bucket, nodes, actualBucketUUID);
         }
+    }
+
+    protected void formatBucket(HttpServletResponse resp, final OutputStream os, final String bucket,
+            List<Object> nodes, String actualBucketUUID) throws IOException, JsonGenerationException,
+            JsonMappingException {
+
+        if(nodes != null) {
+            List<Object> serverList = new ArrayList<Object>();
+            for (Object node : nodes) {
+                Map<String, Object> nodeObj = (Map<String, Object>)node;
+                serverList.add(nodeObj.get("hostname"));
+            }
 
 
-        List<Object> vBucketMap = new ArrayList<Object>();
-        for(int i=0; i < NUM_VBUCKETS; i++) {
-            List<Object> vbucket = new ArrayList<Object>();
-            vbucket.add(i%serverList.size());
-            vbucket.add(-1);
-            vBucketMap.add(vbucket);
+            List<Object> vBucketMap = new ArrayList<Object>();
+            for(int i=0; i < NUM_VBUCKETS; i++) {
+                List<Object> vbucket = new ArrayList<Object>();
+                vbucket.add(i%serverList.size());
+                vbucket.add(-1);
+                vBucketMap.add(vbucket);
+            }
+
+            Map<String, Object> vbucketServerMap = new HashMap<String, Object>();
+            vbucketServerMap.put("serverList", serverList);
+            vbucketServerMap.put("vBucketMap", vBucketMap);
+
+            Map<String, Object> responseMap = new HashMap<String, Object>();
+            responseMap.put("nodes", nodes);
+            responseMap.put("vBucketServerMap", vbucketServerMap);
+            responseMap.put("name", bucket);
+            responseMap.put("uuid", actualBucketUUID);
+            responseMap.put("bucketType", "membase");
+
+            mapper.writeValue(os, responseMap);
+        } else {
+            resp.setStatus(404);
         }
-
-        Map<String, Object> vbucketServerMap = new HashMap<String, Object>();
-        vbucketServerMap.put("serverList", serverList);
-        vbucketServerMap.put("vBucketMap", vBucketMap);
-
-        Map<String, Object> responseMap = new HashMap<String, Object>();
-        responseMap.put("nodes", nodes);
-        responseMap.put("vBucketServerMap", vbucketServerMap);
-        responseMap.put("name", bucket);
-        responseMap.put("bucketType", "membase");
-
-        mapper.writeValue(os, responseMap);
     }
 
     protected String removePathSuffix(String path, String suffix) {

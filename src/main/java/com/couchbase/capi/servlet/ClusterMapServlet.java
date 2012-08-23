@@ -72,7 +72,8 @@ public class ClusterMapServlet extends HttpServlet {
             if (pool.startsWith("/")) {
                 pool = pool.substring(1);
             }
-            executePoolRequest(resp, os, pool);
+            String uuid = req.getParameter("uuid");
+            executePoolRequest(resp, os, pool, uuid);
         }
     }
 
@@ -91,7 +92,7 @@ public class ClusterMapServlet extends HttpServlet {
         for (String poolName : poolNames) {
             Map<String, Object> pool = new HashMap<String, Object>();
             pool.put("name", poolName);
-            pool.put("uri", "/pools/" + poolName);
+            pool.put("uri", "/pools/" + poolName + "?uuid=" + couchbaseBehavior.getPoolUUID(poolName));
             pools.add(pool);
         }
 
@@ -108,13 +109,25 @@ public class ClusterMapServlet extends HttpServlet {
      * @param pool
      * @throws IOException
      */
-    protected void executePoolRequest(HttpServletResponse resp, OutputStream os, String pool)
+    protected void executePoolRequest(HttpServletResponse resp, OutputStream os, String pool, String uuid)
             throws IOException {
         logger.trace("asked for pool " + pool);
 
         Map<String, Object> responseMap = couchbaseBehavior.getPoolDetails(pool);
         if(responseMap != null) {
-            mapper.writeValue(os, responseMap);
+            // if the request contained a UUID, make sure it matches
+            if(uuid != null) {
+                String poolUUID = couchbaseBehavior.getPoolUUID(pool);
+                if(!uuid.equals(poolUUID)) {
+                    resp.setStatus(404);
+                    os.write("Cluster uuid does not match the requested.".getBytes());
+                    os.close();
+                } else {
+                    mapper.writeValue(os, responseMap);
+                }
+            } else {
+                mapper.writeValue(os, responseMap);
+            }
         } else {
             resp.setStatus(404);
         }

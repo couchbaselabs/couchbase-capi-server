@@ -114,14 +114,9 @@ public class BucketMapServlet extends HttpServlet {
             JsonGenerationException, JsonMappingException {
         if(bucketNames != null) {
             for (String bucketName : bucketNames) {
-
-                Map<String, Object> bucket = new HashMap<String, Object>();
-                bucket.put("name", bucketName);
-                bucket.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucketName, couchbaseBehavior.getBucketUUID(pool, bucketName)));
-                bucket.put("uuid", couchbaseBehavior.getBucketUUID(pool, bucketName));
-                List<String> bucketCapabilities = new ArrayList<String>();
-                bucketCapabilities.add("couchapi");
-                bucket.put("bucketCapabilities", bucketCapabilities);
+                String actualBucketUUID = couchbaseBehavior.getBucketUUID(pool, bucketName);
+                List<Object> nodes = couchbaseBehavior.getNodesServingBucket(pool, bucketName);
+                Map<String, Object> bucket = buildBucketDetailsMap(bucketName, nodes, actualBucketUUID);
                 buckets.add(bucket);
             }
             mapper.writeValue(os, buckets);
@@ -163,40 +158,47 @@ public class BucketMapServlet extends HttpServlet {
             JsonMappingException {
 
         if(nodes != null) {
-            List<Object> serverList = new ArrayList<Object>();
-            for (Object node : nodes) {
-                Map<String, Object> nodeObj = (Map<String, Object>)node;
-                serverList.add(nodeObj.get("hostname"));
-            }
-
-
-            List<Object> vBucketMap = new ArrayList<Object>();
-            for(int i=0; i < NUM_VBUCKETS; i++) {
-                List<Object> vbucket = new ArrayList<Object>();
-                vbucket.add(i%serverList.size());
-                vbucket.add(-1);
-                vBucketMap.add(vbucket);
-            }
-
-            Map<String, Object> vbucketServerMap = new HashMap<String, Object>();
-            vbucketServerMap.put("serverList", serverList);
-            vbucketServerMap.put("vBucketMap", vBucketMap);
-
-            Map<String, Object> responseMap = new HashMap<String, Object>();
-            responseMap.put("nodes", nodes);
-            responseMap.put("vBucketServerMap", vbucketServerMap);
-            responseMap.put("name", bucket);
-            responseMap.put("uuid", actualBucketUUID);
-            responseMap.put("bucketType", "membase");
-
-            List<String> bucketCapabilities = new ArrayList<String>();
-            bucketCapabilities.add("couchapi");
-            responseMap.put("bucketCapabilities", bucketCapabilities);
+            Map<String, Object> responseMap = buildBucketDetailsMap(bucket,
+                    nodes, actualBucketUUID);
 
             mapper.writeValue(os, responseMap);
         } else {
             resp.setStatus(404);
         }
+    }
+
+    protected Map<String, Object> buildBucketDetailsMap(final String bucket,
+            List<Object> nodes, String actualBucketUUID) {
+        List<Object> serverList = new ArrayList<Object>();
+        for (Object node : nodes) {
+            Map<String, Object> nodeObj = (Map<String, Object>)node;
+            serverList.add(nodeObj.get("hostname"));
+        }
+
+
+        List<Object> vBucketMap = new ArrayList<Object>();
+        for(int i=0; i < NUM_VBUCKETS; i++) {
+            List<Object> vbucket = new ArrayList<Object>();
+            vbucket.add(i%serverList.size());
+            vbucket.add(-1);
+            vBucketMap.add(vbucket);
+        }
+
+        Map<String, Object> vbucketServerMap = new HashMap<String, Object>();
+        vbucketServerMap.put("serverList", serverList);
+        vbucketServerMap.put("vBucketMap", vBucketMap);
+
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("nodes", nodes);
+        responseMap.put("vBucketServerMap", vbucketServerMap);
+        responseMap.put("name", bucket);
+        responseMap.put("uuid", actualBucketUUID);
+        responseMap.put("bucketType", "membase");
+
+        List<String> bucketCapabilities = new ArrayList<String>();
+        bucketCapabilities.add("couchapi");
+        responseMap.put("bucketCapabilities", bucketCapabilities);
+        return responseMap;
     }
 
     protected String removePathSuffix(String path, String suffix) {

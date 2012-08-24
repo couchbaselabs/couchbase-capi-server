@@ -93,12 +93,12 @@ public class ClusterMapServlet extends HttpServlet {
             Map<String, Object> pool = new HashMap<String, Object>();
             pool.put("name", poolName);
             pool.put("uri", "/pools/" + poolName + "?uuid=" + couchbaseBehavior.getPoolUUID(poolName));
-            pool.put("uuid", couchbaseBehavior.getPoolUUID("default"));
             pools.add(pool);
         }
 
         Map<String, Object> responseMap = new HashMap<String, Object>();
         responseMap.put("pools", pools);
+        responseMap.put("uuid", couchbaseBehavior.getPoolUUID("default"));
 
         mapper.writeValue(os, responseMap);
     }

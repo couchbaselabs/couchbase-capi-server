@@ -118,6 +118,7 @@ public class BucketMapServlet extends HttpServlet {
                 Map<String, Object> bucket = new HashMap<String, Object>();
                 bucket.put("name", bucketName);
                 bucket.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucketName, couchbaseBehavior.getBucketUUID(pool, bucketName)));
+                bucket.put("uuid", couchbaseBehavior.getBucketUUID(pool, bucketName));
                 buckets.add(bucket);
             }
             mapper.writeValue(os, buckets);

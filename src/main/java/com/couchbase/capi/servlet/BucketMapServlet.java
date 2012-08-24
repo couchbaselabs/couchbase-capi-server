@@ -119,6 +119,9 @@ public class BucketMapServlet extends HttpServlet {
                 bucket.put("name", bucketName);
                 bucket.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucketName, couchbaseBehavior.getBucketUUID(pool, bucketName)));
                 bucket.put("uuid", couchbaseBehavior.getBucketUUID(pool, bucketName));
+                List<String> bucketCapabilities = new ArrayList<String>();
+                bucketCapabilities.add("couchapi");
+                bucket.put("bucketCapabilities", bucketCapabilities);
                 buckets.add(bucket);
             }
             mapper.writeValue(os, buckets);
@@ -185,6 +188,10 @@ public class BucketMapServlet extends HttpServlet {
             responseMap.put("name", bucket);
             responseMap.put("uuid", actualBucketUUID);
             responseMap.put("bucketType", "membase");
+
+            List<String> bucketCapabilities = new ArrayList<String>();
+            bucketCapabilities.add("couchapi");
+            responseMap.put("bucketCapabilities", bucketCapabilities);
 
             mapper.writeValue(os, responseMap);
         } else {

@@ -192,6 +192,7 @@ public class BucketMapServlet extends HttpServlet {
         responseMap.put("nodes", nodes);
         responseMap.put("vBucketServerMap", vbucketServerMap);
         responseMap.put("name", bucket);
+        responseMap.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucket, actualBucketUUID));
         responseMap.put("uuid", actualBucketUUID);
         responseMap.put("bucketType", "membase");
 

@@ -35,12 +35,15 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
     }
 
     public String getBucketUUID(String pool, String bucket) {
-        return "00000000000000000000000000000000";
+        if("default".equals(bucket)) {
+            return "00000000000000000000000000000000";
+        }
+        return null;
     }
 
-    public List<Object> getNodesServingBucket(String pool, String bucket) {
+    public List<Object> getNodesServingPool(String pool) {
         List<Object> nodes = null;
-        if("default".equals(bucket)) {
+        if("default".equals(pool)) {
             nodes = new ArrayList<Object>();
 
             Map<String, Object> nodePorts = new HashMap<String, Object>();

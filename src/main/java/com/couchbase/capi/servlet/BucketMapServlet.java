@@ -115,7 +115,7 @@ public class BucketMapServlet extends HttpServlet {
         if(bucketNames != null) {
             for (String bucketName : bucketNames) {
                 String actualBucketUUID = couchbaseBehavior.getBucketUUID(pool, bucketName);
-                List<Object> nodes = couchbaseBehavior.getNodesServingBucket(pool, bucketName);
+                List<Object> nodes = couchbaseBehavior.getNodesServingPool(pool);
                 Map<String, Object> bucket = buildBucketDetailsMap(bucketName, nodes, actualBucketUUID);
                 buckets.add(bucket);
             }
@@ -136,9 +136,14 @@ public class BucketMapServlet extends HttpServlet {
     protected void executeBucketRequest(HttpServletResponse resp, final OutputStream os,
             final String pool, final String bucket, String bucketUUID) throws IOException {
 
-        List<Object> nodes = couchbaseBehavior.getNodesServingBucket(pool, bucket);
-
         String actualBucketUUID = couchbaseBehavior.getBucketUUID(pool, bucket);
+        if(actualBucketUUID == null) {
+            resp.setStatus(404);
+            return;
+        }
+
+        List<Object> nodes = couchbaseBehavior.getNodesServingPool(pool);
+
         if(bucketUUID != null) {
             //if a bucket uuid is provided, make sure it matches the buckets uuid
             if(!bucketUUID.equals(actualBucketUUID)) {

@@ -68,36 +68,36 @@ public class CAPIServlet extends HttpServlet {
         String[] splitUri = getUriPieces(uri);
 
         if (splitUri.length == 1) {
-            handleDatabase(req, resp, unescapeDatabaseName(splitUri[0]));
+            handleDatabase(req, resp, unescapeName(splitUri[0]));
         } else if (splitUri.length == 2) {
             if (splitUri[1].equals("_bulk_docs")) {
-                handleBulkDocs(req, resp, unescapeDatabaseName(splitUri[0]));
+                handleBulkDocs(req, resp, unescapeName(splitUri[0]));
             } else if (splitUri[1].equals("_revs_diff")) {
-                handleRevsDiff(req, resp, unescapeDatabaseName(splitUri[0]));
+                handleRevsDiff(req, resp, unescapeName(splitUri[0]));
             } else if (splitUri[1].equals("_ensure_full_commit")) {
                 handleEnsureFullCommit(req, resp,
-                        unescapeDatabaseName(splitUri[0]));
+                        unescapeName(splitUri[0]));
             } else if (splitUri[1].startsWith("_")) {
                 logger.debug("Unsupported special operation {}", splitUri[1]);
             } else {
                 // this must be a document id
-                handleDocument(req, resp, unescapeDatabaseName(splitUri[0]),
-                        splitUri[1]);
+                handleDocument(req, resp, unescapeName(splitUri[0]),
+                        unescapeName(splitUri[1]));
             }
         } else if (splitUri.length == 3) {
             if (splitUri[1].equals("_local")) {
                 handleLocalDocument(req, resp,
-                        unescapeDatabaseName(splitUri[0]), "_local/"
-                                + splitUri[2]);
+                        unescapeName(splitUri[0]), "_local/"
+                                + unescapeName(splitUri[2]));
             } else {
                 // attachment request
-                handleAttachment(req, resp, unescapeDatabaseName(splitUri[0]),
+                handleAttachment(req, resp, unescapeName(splitUri[0]),
                         splitUri[1], splitUri[2]);
             }
         } else {
             if (splitUri[1].equals("_local")) {
                 handleLocalAttachment(req, resp,
-                        unescapeDatabaseName(splitUri[0]), splitUri[2],
+                        unescapeName(splitUri[0]), splitUri[2],
                         splitUri[3]);
             } else {
                 logger.debug("I don't know how to handle {}", uri);
@@ -351,8 +351,8 @@ public class CAPIServlet extends HttpServlet {
         return result;
     }
 
-    String unescapeDatabaseName(String databaseName) throws UnsupportedEncodingException {
-        return URLDecoder.decode(databaseName, "UTF-8");
+    String unescapeName(String name) throws UnsupportedEncodingException {
+        return URLDecoder.decode(name, "UTF-8");
     }
 
 }

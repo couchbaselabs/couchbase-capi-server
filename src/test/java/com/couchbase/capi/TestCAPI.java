@@ -299,4 +299,13 @@ public class TestCAPI extends CAPITestCase {
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
     }
+
+    public void testActualGetCheckpointDocument() throws Exception {
+        HttpClient client = new DefaultHttpClient();
+
+        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/441-0921e80de6603d60b1d553bb7c253def%%2Fbeer-sample%%2Fbeer-sample", port));
+        HttpResponse response = client.execute(request);
+
+        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+    }
 }

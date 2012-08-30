@@ -101,6 +101,29 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
                 document.put("_rev", "1-abc");
                 document.put("value", "test");
                 return document;
+            } else if("_local/441-0921e80de6603d60b1d553bb7c253def/beer-sample/beer-sample".equals(docId)) {
+                Map<String, Object> historyItem = new HashMap<String, Object>();
+                historyItem.put("session_id", "121f9c416336108dd0b891a054f9b878");
+                historyItem.put("start_time", "Thu, 30 Aug 2012 18:22:02 GMT");
+                historyItem.put("end_time", "Thu, 30 Aug 2012 18:22:02 GMT");
+                historyItem.put("start_last_seq", 0);
+                historyItem.put("end_last_seq", 10);
+                historyItem.put("recorded_seq", 10);
+                historyItem.put("docs_checked", 10);
+                historyItem.put("docs_written", 10);
+
+                List<Object> history = new ArrayList<Object>();
+                history.add(historyItem);
+
+                Map<String, Object> document = new HashMap<String, Object>();
+                document.put("session_id", "121f9c416336108dd0b891a054f9b878");
+                document.put("source_last_seq", 10);
+                document.put("start_time", "Thu, 30 Aug 2012 18:22:02 GMT");
+                document.put("end_time", "Thu, 30 Aug 2012 18:22:02 GMT");
+                document.put("docs_checked", 10);
+                document.put("docs_written", 10);
+                document.put("history", history);
+                return document;
             }
         }
         return null;

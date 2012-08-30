@@ -180,7 +180,7 @@ public class BucketMapServlet extends HttpServlet {
             serverList.add(nodeObj.get("hostname"));
             //add the bucket name to the node's couchApiBase
             String couchApiBase = (String)nodeObj.get("couchApiBase");
-            nodeObj.put("couchApiBase", couchApiBase + "/" + bucket);
+            nodeObj.put("couchApiBase", couchApiBase + bucket);
         }
 
 

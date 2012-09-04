@@ -48,7 +48,7 @@ public class CAPIServer extends Server {
         ServletContextHandler context = new ServletContextHandler(
                 ServletContextHandler.SESSIONS);
         context.setContextPath("/");
-        context.setSecurityHandler(basicAuth("Administrator", "password", "Couchbase Server Admin / REST"));
+        context.setSecurityHandler(basicAuth(username, password, "Couchbase Server Admin / REST"));
         setHandler(context);
 
         context.addServlet(new ServletHolder(new ClusterMapServlet(couchbaseBehavior)),

@@ -16,14 +16,13 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 public class TestCAPI extends CAPITestCase {
 
 
 
     public void testDatabaseHead() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpHead(String.format("http://localhost:%d/default", port));
         HttpResponse response = client.execute(request);
@@ -34,7 +33,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testDatabaseHeadDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpHead(String.format("http://localhost:%d/doesnotexist", port));
         HttpResponse response = client.execute(request);
@@ -44,7 +43,7 @@ public class TestCAPI extends CAPITestCase {
 
     public void testDatabaseGet() throws Exception {
 
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default", port));
         HttpResponse response = client.execute(request);
@@ -68,7 +67,7 @@ public class TestCAPI extends CAPITestCase {
 
     public void testDatabaseGetDoesNotExist() throws Exception {
 
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/doesnotexist", port));
         HttpResponse response = client.execute(request);
@@ -78,7 +77,7 @@ public class TestCAPI extends CAPITestCase {
 
     public void testEnsureFullCommit() throws Exception {
 
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpPost(String.format("http://localhost:%d/default/_ensure_full_commit", port));
         HttpResponse response = client.execute(request);
@@ -88,7 +87,7 @@ public class TestCAPI extends CAPITestCase {
 
     public void testEnsureFullCommitDoesNotExist() throws Exception {
 
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpPost(String.format("http://localhost:%d/doesnotexist/_ensure_full_commit", port));
         HttpResponse response = client.execute(request);
@@ -98,7 +97,7 @@ public class TestCAPI extends CAPITestCase {
 
     public void testRevsDiff() throws Exception {
 
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpPost request = new HttpPost(String.format("http://localhost:%d/default/_revs_diff", port));
 
@@ -130,7 +129,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testRevsDiffDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpPost request = new HttpPost(String.format("http://localhost:%d/doesnotexist/_revs_diff", port));
 
@@ -148,7 +147,7 @@ public class TestCAPI extends CAPITestCase {
 
     public void testBulkDocs() throws Exception {
 
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpPost request = new HttpPost(String.format("http://localhost:%d/default/_bulk_docs", port));
 
@@ -189,7 +188,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testBulkDocsDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpPost request = new HttpPost(String.format("http://localhost:%d/doesnotexist/_bulk_docs", port));
 
@@ -215,7 +214,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testGetDocument() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/docid", port));
         HttpResponse response = client.execute(request);
@@ -240,7 +239,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testGetDocumentDatabaseDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/doesnotexist/docid", port));
         HttpResponse response = client.execute(request);
@@ -249,7 +248,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testGetDocumentDocumentDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/doesnotexist", port));
         HttpResponse response = client.execute(request);
@@ -258,7 +257,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testGetLocalDocument() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/docid", port));
         HttpResponse response = client.execute(request);
@@ -283,7 +282,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testGetLocalDocumentDatabaseDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/doesnotexist/_local/docid", port));
         HttpResponse response = client.execute(request);
@@ -292,7 +291,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testGetLocalDocumentDocumentDoesNotExist() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/doesnotexist", port));
         HttpResponse response = client.execute(request);
@@ -301,7 +300,7 @@ public class TestCAPI extends CAPITestCase {
     }
 
     public void testActualGetCheckpointDocument() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/441-0921e80de6603d60b1d553bb7c253def%%2Fbeer-sample%%2Fbeer-sample", port));
         HttpResponse response = client.execute(request);

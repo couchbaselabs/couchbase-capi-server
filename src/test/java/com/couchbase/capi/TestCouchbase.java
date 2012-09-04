@@ -12,7 +12,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -20,7 +19,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 public class TestCouchbase extends CAPITestCase {
 
     public void testPools() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools", port));
 
@@ -49,7 +48,7 @@ public class TestCouchbase extends CAPITestCase {
     }
 
     public void testPool() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         // first access the pool with its uuid
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default?uuid=00000000000000000000000000000000", port));
@@ -92,7 +91,7 @@ public class TestCouchbase extends CAPITestCase {
     }
 
     public void testPoolBuckets() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         // first access the buckets list with the correct uuid
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets?uuid=00000000000000000000000000000000", port));
@@ -134,7 +133,7 @@ public class TestCouchbase extends CAPITestCase {
     }
 
     public void testPoolBucketDetails() throws Exception {
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = getClient();
 
         // first access the bucket with the correct bucket_uuid
         HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/default?bucket_uuid=00000000000000000000000000000000", port));

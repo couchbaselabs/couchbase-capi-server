@@ -2,6 +2,10 @@ package com.couchbase.capi;
 
 import junit.framework.TestCase;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +22,7 @@ public abstract class CAPITestCase extends TestCase {
     public CAPITestCase() {
         capiBehavior = new CAPIBehaviorTestImpl();
         couchbaseBehavior = new CouchbaseBehaviorTestImpl();
-        capiServer = new CAPIServer(capiBehavior, couchbaseBehavior);
+        capiServer = new CAPIServer(capiBehavior, couchbaseBehavior, "Administrator", "password");
     }
 
     @Override
@@ -31,6 +35,14 @@ public abstract class CAPITestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         capiServer.stop();
+    }
+
+    protected HttpClient getClient() {
+        DefaultHttpClient result = new DefaultHttpClient();
+
+        result.getCredentialsProvider().setCredentials(new AuthScope(null, -1, null), new UsernamePasswordCredentials("Administrator", "password"));
+
+        return result;
     }
 
 }

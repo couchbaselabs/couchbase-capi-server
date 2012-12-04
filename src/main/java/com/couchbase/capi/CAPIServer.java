@@ -39,10 +39,8 @@ import com.couchbase.capi.servlet.ClusterMapServlet;
 
 public class CAPIServer extends Server {
 
-    private String publishAddress;
-
-    private CAPIBehavior capiBehavior;
-    private CouchbaseBehavior couchbaseBehavior;
+    private InetAddress publishAddress;
+    private InetSocketAddress bindAddress;
 
     public CAPIServer(CAPIBehavior capiBehavior, CouchbaseBehavior couchbaseBehavior, String username, String password) {
         this(capiBehavior, couchbaseBehavior, 0, username, password);
@@ -54,9 +52,7 @@ public class CAPIServer extends Server {
 
     public CAPIServer(CAPIBehavior capiBehavior, CouchbaseBehavior couchbaseBehavior, InetSocketAddress bindAddress, String username, String password) {
         super(bindAddress);
-
-        this.capiBehavior = capiBehavior;
-        this.couchbaseBehavior = couchbaseBehavior;
+        this.bindAddress = bindAddress;
 
         ServletContextHandler context = new ServletContextHandler(
                 ServletContextHandler.SESSIONS);
@@ -87,7 +83,7 @@ public class CAPIServer extends Server {
      *
      * @return
      */
-    protected String guessPublishAddress() {
+    protected InetAddress guessPublishAddress() {
         NetworkInterface ni;
         try {
             ni = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
@@ -95,11 +91,11 @@ public class CAPIServer extends Server {
             return null;
         }
 
-        Enumeration ia = ni.getInetAddresses();
+        Enumeration<InetAddress> ia = ni.getInetAddresses();
         while (ia.hasMoreElements()) {
             InetAddress elem = (InetAddress) ia.nextElement();
             if (elem instanceof Inet4Address) {
-                return elem.getHostAddress();
+                return elem;
             }
         }
         return null;
@@ -117,11 +113,11 @@ public class CAPIServer extends Server {
         }
     }
 
-    public String getPublishAddress() {
+    public InetAddress getPublishAddress() {
         return publishAddress;
     }
 
-    public void setPublishAddress(String publishAddress) {
+    public void setPublishAddress(InetAddress publishAddress) {
         this.publishAddress = publishAddress;
     }
 
@@ -148,5 +144,9 @@ public class CAPIServer extends Server {
 
         return csh;
 
+    }
+
+    public InetSocketAddress getBindAddress() {
+        return bindAddress;
     }
 }

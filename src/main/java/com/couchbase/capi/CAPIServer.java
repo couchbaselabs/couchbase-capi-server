@@ -51,6 +51,10 @@ public class CAPIServer extends Server {
     }
 
     public CAPIServer(CAPIBehavior capiBehavior, CouchbaseBehavior couchbaseBehavior, InetSocketAddress bindAddress, String username, String password) {
+        this(capiBehavior, couchbaseBehavior, bindAddress, username, password, 1024);
+    }
+
+    public CAPIServer(CAPIBehavior capiBehavior, CouchbaseBehavior couchbaseBehavior, InetSocketAddress bindAddress, String username, String password, int numVbuckets) {
         super(bindAddress);
         this.bindAddress = bindAddress;
 
@@ -63,7 +67,7 @@ public class CAPIServer extends Server {
         context.addServlet(new ServletHolder(new ClusterMapServlet(couchbaseBehavior)),
                 "/pools/*");
         context.addServlet(new ServletHolder(new BucketMapServlet(
-                couchbaseBehavior)), "/pools/default/buckets/*");
+                couchbaseBehavior, numVbuckets)), "/pools/default/buckets/*");
         context.addServlet(
                 new ServletHolder(new CAPIServlet(capiBehavior)), "/*");
 

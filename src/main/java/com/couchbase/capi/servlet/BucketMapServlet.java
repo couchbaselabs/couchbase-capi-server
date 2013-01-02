@@ -48,8 +48,7 @@ import com.couchbase.capi.CouchbaseBehavior;
 @SuppressWarnings("serial")
 public class BucketMapServlet extends HttpServlet {
 
-    // FIXME make number of buckets configurable
-    protected int NUM_VBUCKETS = 1024;
+    protected int numVbuckets = 1024;
 
     private static final Logger logger = LoggerFactory.getLogger(BucketMapServlet.class);
     protected ObjectMapper mapper = new ObjectMapper();
@@ -58,6 +57,11 @@ public class BucketMapServlet extends HttpServlet {
 
     public BucketMapServlet(CouchbaseBehavior couchbaseBehavior) {
         this.couchbaseBehavior = couchbaseBehavior;
+    }
+
+    public BucketMapServlet(CouchbaseBehavior couchbaseBehavior, int numVbuckets) {
+        this.couchbaseBehavior = couchbaseBehavior;
+        this.numVbuckets = numVbuckets;
     }
 
     /**
@@ -185,7 +189,7 @@ public class BucketMapServlet extends HttpServlet {
 
 
         List<Object> vBucketMap = new ArrayList<Object>();
-        for(int i=0; i < NUM_VBUCKETS; i++) {
+        for(int i=0; i < numVbuckets; i++) {
             List<Object> vbucket = new ArrayList<Object>();
             vbucket.add(i%serverList.size());
             vbucket.add(-1);

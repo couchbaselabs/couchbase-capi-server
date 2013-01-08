@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -163,11 +164,17 @@ public class CAPIServlet extends HttpServlet {
         OutputStream os = resp.getOutputStream();
         InputStream is = req.getInputStream();
 
+        int requestLength = req.getContentLength();
+        byte[] buffer = new byte[requestLength];
+        IOUtils.readFully(is, buffer, 0, requestLength);
+
+        logger.trace("revs diff request body was {}", new String(buffer));
+
         @SuppressWarnings("unchecked")
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
-                .readValue(is, Map.class);
+                .readValue(buffer, Map.class);
 
-        logger.trace("parsed value is " + parsedValue);
+        logger.trace("revs diff parsed value is " + parsedValue);
 
         Map<String, Object> responseMap = capiBehavior.revsDiff(database, parsedValue);
 
@@ -271,9 +278,13 @@ public class CAPIServlet extends HttpServlet {
             //read the document
             InputStream is = req.getInputStream();
 
+            int requestLength = req.getContentLength();
+            byte[] buffer = new byte[requestLength];
+            IOUtils.readFully(is, buffer, 0, requestLength);
+
             @SuppressWarnings("unchecked")
             Map<String, Object> parsedValue = (Map<String, Object>) mapper
-                    .readValue(is, Map.class);
+                    .readValue(buffer, Map.class);
 
             if(documentType.equals("_local)")) {
                 rev = capiBehavior.storeLocalDocument(databaseName, documentId, parsedValue);
@@ -328,9 +339,13 @@ public class CAPIServlet extends HttpServlet {
         OutputStream os = resp.getOutputStream();
         InputStream is = req.getInputStream();
 
+        int requestLength = req.getContentLength();
+        byte[] buffer = new byte[requestLength];
+        IOUtils.readFully(is, buffer, 0, requestLength);
+
         @SuppressWarnings("unchecked")
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
-                .readValue(is, Map.class);
+                .readValue(buffer, Map.class);
 
         logger.trace("parsed value is " + parsedValue);
 

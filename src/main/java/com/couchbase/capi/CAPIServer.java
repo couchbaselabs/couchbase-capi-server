@@ -37,6 +37,7 @@ import org.eclipse.jetty.util.security.Credential;
 import com.couchbase.capi.servlet.BucketMapServlet;
 import com.couchbase.capi.servlet.CAPIServlet;
 import com.couchbase.capi.servlet.ClusterMapServlet;
+import com.couchbase.capi.servlet.StatsServlet;
 
 public class CAPIServer extends Server {
 
@@ -73,6 +74,7 @@ public class CAPIServer extends Server {
         context.setSecurityHandler(basicAuth(username, password, "Couchbase Server Admin / REST"));
         setHandler(context);
 
+        context.addServlet(new ServletHolder(new StatsServlet(couchbaseBehavior, capiBehavior)), "/_stats");
         context.addServlet(new ServletHolder(new ClusterMapServlet(couchbaseBehavior)),
                 "/pools/*");
         context.addServlet(new ServletHolder(new BucketMapServlet(

@@ -55,4 +55,6 @@ public interface CAPIBehavior {
 
     String storeLocalAttachment(String database, String docId, String attachmentName, String contentType, InputStream input);
 
+     Map<String, Object> getStats();
+
 }

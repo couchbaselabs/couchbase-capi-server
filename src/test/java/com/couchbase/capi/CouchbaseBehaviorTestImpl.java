@@ -85,4 +85,9 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
         return nodes;
     }
 
+    @Override
+    public Map<String, Object> getStats() {
+        return new HashMap<String, Object>();
+    }
+
 }

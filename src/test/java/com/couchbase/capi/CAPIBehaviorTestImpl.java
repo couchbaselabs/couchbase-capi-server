@@ -178,4 +178,9 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
         return null;
     }
 
+    @Override
+    public Map<String, Object> getStats() {
+        return new HashMap<String, Object>();
+    }
+
 }

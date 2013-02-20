@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.UnavailableException;
+
 public interface CAPIBehavior {
 
     /** Database Operations **/
@@ -33,7 +35,7 @@ public interface CAPIBehavior {
 
     Map<String, Object> revsDiff(String database, Map<String, Object> revs);
 
-    List<Object> bulkDocs(String database, List<Map<String, Object>> docs);
+    List<Object> bulkDocs(String database, List<Map<String, Object>> docs) throws UnavailableException;
 
     /** Document Operations **/
 

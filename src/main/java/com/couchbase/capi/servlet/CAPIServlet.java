@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -321,6 +322,18 @@ public class CAPIServlet extends HttpServlet {
         mapper.writeValue(os, responseMap);
     }
 
+    private void sendServiceUnavailableResponse(HttpServletResponse resp)
+            throws IOException, JsonGenerationException, JsonMappingException {
+        resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        resp.setContentType("application/json");
+        OutputStream os = resp.getOutputStream();
+
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("error", "service_unavailable");
+        responseMap.put("reason", "too many concurrent _bulk_docs requests");
+        mapper.writeValue(os, responseMap);
+    }
+
     protected void handleBulkDocs(HttpServletRequest req,
             HttpServletResponse resp, String database) throws ServletException,
             IOException {
@@ -349,12 +362,16 @@ public class CAPIServlet extends HttpServlet {
 
         logger.trace("parsed value is " + parsedValue);
 
-        List<Object> responseList = capiBehavior.bulkDocs(database, (ArrayList<Map<String, Object>>) parsedValue.get("docs"));
-        if(responseList == null) {
-            sendNotFoundResponse(resp);
-            return;
+        try {
+            List<Object> responseList = capiBehavior.bulkDocs(database, (ArrayList<Map<String, Object>>) parsedValue.get("docs"));
+            if(responseList == null) {
+                sendNotFoundResponse(resp);
+                return;
+            }
+            mapper.writeValue(os, responseList);
+        } catch (UnavailableException e) {
+            sendServiceUnavailableResponse(resp);
         }
-        mapper.writeValue(os, responseList);
     }
 
     String[] getUriPieces(String uri) {

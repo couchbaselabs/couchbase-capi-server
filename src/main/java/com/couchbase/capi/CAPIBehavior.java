@@ -33,7 +33,7 @@ public interface CAPIBehavior {
 
     boolean ensureFullCommit(String database);
 
-    Map<String, Object> revsDiff(String database, Map<String, Object> revs);
+    Map<String, Object> revsDiff(String database, Map<String, Object> revs) throws UnavailableException;
 
     List<Object> bulkDocs(String database, List<Map<String, Object>> docs) throws UnavailableException;
 

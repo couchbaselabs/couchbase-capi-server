@@ -177,12 +177,16 @@ public class CAPIServlet extends HttpServlet {
 
         logger.trace("revs diff parsed value is " + parsedValue);
 
-        Map<String, Object> responseMap = capiBehavior.revsDiff(database, parsedValue);
+        try {
+            Map<String, Object> responseMap = capiBehavior.revsDiff(database, parsedValue);
 
-        if(responseMap != null) {
-            mapper.writeValue(os, responseMap);
-        } else {
-            sendNotFoundResponse(resp);
+            if(responseMap != null) {
+                mapper.writeValue(os, responseMap);
+            } else {
+                sendNotFoundResponse(resp);
+            }
+        } catch (UnavailableException e) {
+                sendServiceUnavailableResponse(resp, "too many concurrent requests");
         }
     }
 
@@ -322,7 +326,7 @@ public class CAPIServlet extends HttpServlet {
         mapper.writeValue(os, responseMap);
     }
 
-    private void sendServiceUnavailableResponse(HttpServletResponse resp)
+    private void sendServiceUnavailableResponse(HttpServletResponse resp, String reason)
             throws IOException, JsonGenerationException, JsonMappingException {
         resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         resp.setContentType("application/json");
@@ -330,7 +334,7 @@ public class CAPIServlet extends HttpServlet {
 
         Map<String, Object> responseMap = new HashMap<String, Object>();
         responseMap.put("error", "service_unavailable");
-        responseMap.put("reason", "too many concurrent _bulk_docs requests");
+        responseMap.put("reason", reason);
         mapper.writeValue(os, responseMap);
     }
 
@@ -370,7 +374,7 @@ public class CAPIServlet extends HttpServlet {
             }
             mapper.writeValue(os, responseList);
         } catch (UnavailableException e) {
-            sendServiceUnavailableResponse(resp);
+            sendServiceUnavailableResponse(resp, "too many concurrent requests");
         }
     }
 

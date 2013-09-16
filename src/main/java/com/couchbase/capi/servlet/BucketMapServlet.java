@@ -207,6 +207,7 @@ public class BucketMapServlet extends HttpServlet {
         responseMap.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucket, actualBucketUUID));
         responseMap.put("uuid", actualBucketUUID);
         responseMap.put("bucketType", "membase");
+	responseMap.put("saslPassword", "");
 
         List<String> bucketCapabilities = new ArrayList<String>();
         bucketCapabilities.add("couchapi");

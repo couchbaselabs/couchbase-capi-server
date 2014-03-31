@@ -69,7 +69,10 @@ public class CAPIServlet extends HttpServlet {
         String uri = req.getRequestURI();
         String[] splitUri = getUriPieces(uri);
 
-        if (splitUri.length == 1) {
+        if((splitUri.length == 1) && splitUri[0].equals("")) {
+            handleWelcome(req, resp);
+        }
+        else if (splitUri.length == 1) {
             handleDatabase(req, resp, unescapeName(splitUri[0]));
         } else if (splitUri.length == 2) {
             if (splitUri[1].equals("_bulk_docs")) {
@@ -106,6 +109,29 @@ public class CAPIServlet extends HttpServlet {
             }
         }
 
+    }
+
+    /**
+     * Handle GET requests to the root URL
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected void handleWelcome(HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException,
+            IOException {
+
+        if (!req.getMethod().equals("GET")) {
+            throw new UnsupportedOperationException(
+                    "Only GET operations on / are supported at this time");
+        }
+
+        logger.trace("Got " + req.getMethod() + " request for /");
+        OutputStream os = resp.getOutputStream();
+        resp.setContentType("application/json");
+        Map<String, Object> responseMap = capiBehavior.welcome();
+        mapper.writeValue(os, responseMap);
     }
 
     /**

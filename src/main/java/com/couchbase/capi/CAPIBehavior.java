@@ -23,6 +23,8 @@ public interface CAPIBehavior {
 
     /** Database Operations **/
 
+    Map<String,Object> welcome();
+
     boolean databaseExists(String database);
 
     Map<String, Object> getDatabaseDetails(String database);

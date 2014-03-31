@@ -22,6 +22,12 @@ import java.util.Map.Entry;
 
 public class CAPIBehaviorTestImpl implements CAPIBehavior {
 
+    public Map<String, Object> welcome() {
+        Map<String,Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("welcome", "couchbase-capi-server-test");
+        return responseMap;
+    }
+
     public boolean databaseExists(String database) {
         if("default".equals(database)) {
             return true;

@@ -72,6 +72,9 @@ public class CAPIServlet extends HttpServlet {
         if((splitUri.length == 1) && splitUri[0].equals("")) {
             handleWelcome(req, resp);
         }
+        else if ((splitUri.length == 1 && splitUri[0].startsWith("_"))) {
+            handleRootSpecial(req, resp, splitUri[0]);
+        }
         else if (splitUri.length == 1) {
             handleDatabase(req, resp, unescapeName(splitUri[0]));
         } else if (splitUri.length == 2) {
@@ -109,6 +112,29 @@ public class CAPIServlet extends HttpServlet {
             }
         }
 
+    }
+
+    /**
+     * Handle special operations at the root level /_...
+     * @param req
+     * @param resp
+     * @param special
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected void handleRootSpecial(HttpServletRequest req,
+            HttpServletResponse resp, String special) throws ServletException,
+            IOException {
+
+        if(special.equals("_pre_replicate")) {
+            logger.debug("got _pre_replicate: {}", req);
+        } else if(special.equals("_commit_for_checkpoint")) {
+            logger.debug("got _commit_for_checkpoint: {}", req);
+        } else {
+            logger.debug("got unknown special: {}", req);
+        }
+
+        sendNotFoundResponse(resp);
     }
 
     /**

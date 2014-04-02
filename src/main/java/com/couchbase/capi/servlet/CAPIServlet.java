@@ -127,12 +127,19 @@ public class CAPIServlet extends HttpServlet {
             IOException {
 
         if(special.equals("_pre_replicate")) {
-            logger.debug("got _pre_replicate: {}", req);
+            logger.debug("got _pre_replicate: {}", req.getParameterMap());
         } else if(special.equals("_commit_for_checkpoint")) {
-            logger.debug("got _commit_for_checkpoint: {}", req);
+            logger.debug("got _commit_for_checkpoint: {}", req.getParameterMap());
         } else {
-            logger.debug("got unknown special: {}", req);
+            logger.debug("got unknown special: {}", req.getParameterMap());
         }
+
+        InputStream is = req.getInputStream();
+        int requestLength = req.getContentLength();
+        byte[] buffer = new byte[requestLength];
+        IOUtils.readFully(is, buffer, 0, requestLength);
+
+        logger.trace("root special request body was: '{}'", new String(buffer));
 
         sendNotFoundResponse(resp);
     }

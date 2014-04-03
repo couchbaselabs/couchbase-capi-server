@@ -127,13 +127,13 @@ public class CAPIServlet extends HttpServlet {
             IOException {
 
         if(special.equals("_pre_replicate")) {
-            logger.debug("got _pre_replicate: {}", req.getParameterMap());
+            logger.debug("got _pre_replicate: {}", req.getRequestURI());
             handlePreReplicate(req, resp);
             return;
         } else if(special.equals("_commit_for_checkpoint")) {
-            logger.debug("got _commit_for_checkpoint: {}", req.getParameterMap());
+            logger.debug("got _commit_for_checkpoint: {}", req.getRequestURI());
         } else {
-            logger.debug("got unknown special: {}", req.getParameterMap());
+            logger.debug("got unknown special: {}", req.getRequestURI());
         }
 
         InputStream is = req.getInputStream();
@@ -169,9 +169,11 @@ public class CAPIServlet extends HttpServlet {
         String vbucketUUID = capiBehavior.getVBucketUUID("default", bucket, vbucket);
 
         if((vbopaque != null) && (!vbopaque.equals(vbucketUUID))) {
+            logger.debug("returning 400");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         if((commitopaque != null) && (!commitopaque.equals(vbucketUUID))) {
+            logger.debug("returning 400");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 

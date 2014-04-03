@@ -61,4 +61,5 @@ public interface CAPIBehavior {
 
      Map<String, Object> getStats();
 
+     String getVBucketUUID(String pool, String bucket, int vbucket);
 }

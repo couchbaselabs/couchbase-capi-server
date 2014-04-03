@@ -128,6 +128,8 @@ public class CAPIServlet extends HttpServlet {
 
         if(special.equals("_pre_replicate")) {
             logger.debug("got _pre_replicate: {}", req.getParameterMap());
+            handlePreReplicate(req, resp);
+            return;
         } else if(special.equals("_commit_for_checkpoint")) {
             logger.debug("got _commit_for_checkpoint: {}", req.getParameterMap());
         } else {
@@ -142,6 +144,42 @@ public class CAPIServlet extends HttpServlet {
         logger.trace("root special request body was: '{}'", new String(buffer));
 
         sendNotFoundResponse(resp);
+    }
+
+    protected void handlePreReplicate(HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        // read the request
+        InputStream is = req.getInputStream();
+        int requestLength = req.getContentLength();
+        byte[] buffer = new byte[requestLength];
+        IOUtils.readFully(is, buffer, 0, requestLength);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parsedValue = (Map<String, Object>) mapper
+                .readValue(buffer, Map.class);
+        logger.trace("pre replicate parsed value is " + parsedValue);
+
+        int vbucket = (Integer)parsedValue.get("vb");
+        String bucket = (String)parsedValue.get("bucket");
+        String bucketUUID = (String)parsedValue.get("bucketUUID");
+        String vbopaque = (String)parsedValue.get("vbopaque");
+        String commitopaque = (String)parsedValue.get("commitopaque");
+
+        String vbucketUUID = capiBehavior.getVBucketUUID("default", bucket, vbucket);
+
+        if((vbopaque != null) && (!vbopaque.equals(vbucketUUID))) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        if((commitopaque != null) && (!commitopaque.equals(vbucketUUID))) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        OutputStream os = resp.getOutputStream();
+        resp.setContentType("application/json");
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("vbopaque", vbucketUUID);
+        mapper.writeValue(os, responseMap);
     }
 
     /**

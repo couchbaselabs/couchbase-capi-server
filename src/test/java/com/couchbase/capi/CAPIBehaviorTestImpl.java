@@ -189,4 +189,11 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
         return new HashMap<String, Object>();
     }
 
+    public String getVBucketUUID(String pool, String bucket, int vbucket) {
+        if("default".equals(bucket)) {
+            return "00000000000000000000000000000000";
+        }
+        return null;
+    }
+
 }

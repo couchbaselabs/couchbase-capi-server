@@ -132,6 +132,8 @@ public class CAPIServlet extends HttpServlet {
             return;
         } else if(special.equals("_commit_for_checkpoint")) {
             logger.debug("got _commit_for_checkpoint: {}", req.getRequestURI());
+            handleCommitForCheckpoint(req, resp);
+            return;
         } else {
             logger.debug("got unknown special: {}", req.getRequestURI());
         }
@@ -181,6 +183,42 @@ public class CAPIServlet extends HttpServlet {
         resp.setContentType("application/json");
         Map<String, Object> responseMap = new HashMap<String, Object>();
         responseMap.put("vbopaque", vbucketUUID);
+        mapper.writeValue(os, responseMap);
+    }
+
+    protected void handleCommitForCheckpoint(HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        // read the request
+        InputStream is = req.getInputStream();
+        int requestLength = req.getContentLength();
+        byte[] buffer = new byte[requestLength];
+        IOUtils.readFully(is, buffer, 0, requestLength);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> parsedValue = (Map<String, Object>) mapper
+                .readValue(buffer, Map.class);
+        logger.trace("pre replicate parsed value is " + parsedValue);
+
+        int vbucket = (Integer)parsedValue.get("vb");
+        String bucket = (String)parsedValue.get("bucket");
+        String bucketUUID = (String)parsedValue.get("bucketUUID");
+        String vbopaque = (String)parsedValue.get("vbopaque");
+
+        String vbucketUUID = capiBehavior.getVBucketUUID("default", bucket, vbucket);
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("vbopaque", vbucketUUID);
+
+        if((vbopaque != null) && (!vbopaque.equals(vbucketUUID))) {
+            logger.debug("returning 400");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } else {
+            // add the commit opaque
+            responseMap.put("commitopaque", vbucketUUID);
+        }
+
+        OutputStream os = resp.getOutputStream();
+        resp.setContentType("application/json");
         mapper.writeValue(os, responseMap);
     }
 

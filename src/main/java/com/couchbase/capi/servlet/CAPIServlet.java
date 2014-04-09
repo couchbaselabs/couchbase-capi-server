@@ -78,6 +78,13 @@ public class CAPIServlet extends HttpServlet {
         else if (splitUri.length == 1) {
             handleDatabase(req, resp, unescapeName(splitUri[0]));
         } else if (splitUri.length == 2) {
+            // make sure database is valid
+            String doesNotExistReason = capiBehavior.databaseExists(unescapeName(splitUri[0]));
+            if(doesNotExistReason != null) {
+                sendNotFoundResponse(resp, doesNotExistReason);
+                return;
+            }
+
             if (splitUri[1].equals("_bulk_docs")) {
                 handleBulkDocs(req, resp, unescapeName(splitUri[0]));
             } else if (splitUri[1].equals("_revs_diff")) {
@@ -93,6 +100,13 @@ public class CAPIServlet extends HttpServlet {
                         unescapeName(splitUri[1]));
             }
         } else if (splitUri.length == 3) {
+            // make sure database is valid
+            String doesNotExistReason = capiBehavior.databaseExists(unescapeName(splitUri[0]));
+            if(doesNotExistReason != null) {
+                sendNotFoundResponse(resp, doesNotExistReason);
+                return;
+            }
+
             if (splitUri[1].equals("_local")) {
                 handleLocalDocument(req, resp,
                         unescapeName(splitUri[0]), "_local/"
@@ -103,6 +117,13 @@ public class CAPIServlet extends HttpServlet {
                         splitUri[1], splitUri[2]);
             }
         } else {
+            // make sure database is valid
+            String doesNotExistReason = capiBehavior.databaseExists(unescapeName(splitUri[0]));
+            if(doesNotExistReason != null) {
+                sendNotFoundResponse(resp, doesNotExistReason);
+                return;
+            }
+
             if (splitUri[1].equals("_local")) {
                 handleLocalAttachment(req, resp,
                         unescapeName(splitUri[0]), splitUri[2],
@@ -145,7 +166,7 @@ public class CAPIServlet extends HttpServlet {
 
         logger.trace("root special request body was: '{}'", new String(buffer));
 
-        sendNotFoundResponse(resp);
+        sendNotFoundResponse(resp, "missing");
     }
 
     protected void handlePreReplicate(HttpServletRequest req,
@@ -267,7 +288,8 @@ public class CAPIServlet extends HttpServlet {
 
         OutputStream os = resp.getOutputStream();
 
-        if(capiBehavior.databaseExists(database)) {
+        String doesNotExistReason = capiBehavior.databaseExists(database);
+        if(doesNotExistReason == null) {
             if (req.getMethod().equals("GET")) {
                 resp.setContentType("application/json");
 
@@ -275,7 +297,7 @@ public class CAPIServlet extends HttpServlet {
                 mapper.writeValue(os, responseMap);
             }
         } else {
-            sendNotFoundResponse(resp);
+            sendNotFoundResponse(resp, doesNotExistReason);
         }
 
     }
@@ -320,7 +342,7 @@ public class CAPIServlet extends HttpServlet {
             if(responseMap != null) {
                 mapper.writeValue(os, responseMap);
             } else {
-                sendNotFoundResponse(resp);
+                sendNotFoundResponse(resp, "missing");
             }
         } catch (UnavailableException e) {
                 sendServiceUnavailableResponse(resp, "too many concurrent requests");
@@ -349,7 +371,7 @@ public class CAPIServlet extends HttpServlet {
             OutputStream os = resp.getOutputStream();
             mapper.writeValue(os, responseMap);
         } else {
-            sendNotFoundResponse(resp);
+            sendNotFoundResponse(resp, "missing");
         }
     }
 
@@ -409,7 +431,7 @@ public class CAPIServlet extends HttpServlet {
                 OutputStream os = resp.getOutputStream();
                 mapper.writeValue(os, doc);
             } else {
-                sendNotFoundResponse(resp);
+                sendNotFoundResponse(resp, "missing");
                 return;
             }
 
@@ -451,7 +473,7 @@ public class CAPIServlet extends HttpServlet {
 
     }
 
-    private void sendNotFoundResponse(HttpServletResponse resp)
+    private void sendNotFoundResponse(HttpServletResponse resp, String doesNotExistReason)
             throws IOException, JsonGenerationException, JsonMappingException {
         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         resp.setContentType("application/json");
@@ -459,7 +481,7 @@ public class CAPIServlet extends HttpServlet {
 
         Map<String, Object> responseMap = new HashMap<String, Object>();
         responseMap.put("error", "not_found");
-        responseMap.put("reason", "missing");
+        responseMap.put("reason", doesNotExistReason);
         mapper.writeValue(os, responseMap);
     }
 
@@ -506,7 +528,7 @@ public class CAPIServlet extends HttpServlet {
         try {
             List<Object> responseList = capiBehavior.bulkDocs(database, (ArrayList<Map<String, Object>>) parsedValue.get("docs"));
             if(responseList == null) {
-                sendNotFoundResponse(resp);
+                sendNotFoundResponse(resp, "missing");
                 return;
             }
             mapper.writeValue(os, responseList);

@@ -25,7 +25,7 @@ public interface CAPIBehavior {
 
     Map<String,Object> welcome();
 
-    boolean databaseExists(String database);
+    String databaseExists(String database);
 
     Map<String, Object> getDatabaseDetails(String database);
 
@@ -62,4 +62,6 @@ public interface CAPIBehavior {
      Map<String, Object> getStats();
 
      String getVBucketUUID(String pool, String bucket, int vbucket);
+
+     String getBucketUUID(String pool, String bucket);
 }

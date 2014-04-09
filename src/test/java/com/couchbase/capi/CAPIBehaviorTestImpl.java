@@ -28,15 +28,16 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
         return responseMap;
     }
 
-    public boolean databaseExists(String database) {
+    public String databaseExists(String database) {
         if("default".equals(database)) {
-            return true;
+            return null;
         }
-        return false;
+        return "missing";
     }
 
     public Map<String, Object> getDatabaseDetails(String database) {
-        if(databaseExists(database)) {
+        String doesNotExistReason = databaseExists(database);
+        if(doesNotExistReason == null) {
             Map<String, Object> responseMap = new HashMap<String, Object>();
             responseMap.put("db_name", database);
             return responseMap;
@@ -196,4 +197,10 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
         return null;
     }
 
+    public String getBucketUUID(String pool, String bucket) {
+        if("default".equals(bucket)) {
+            return "00000000000000000000000000000000";
+        }
+        return null;
+    }
 }

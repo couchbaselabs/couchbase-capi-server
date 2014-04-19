@@ -219,7 +219,7 @@ public class CAPIServlet extends HttpServlet {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
                 .readValue(buffer, Map.class);
-        logger.trace("pre replicate parsed value is " + parsedValue);
+        logger.trace("commit for checkpoint parsed value is " + parsedValue);
 
         int vbucket = (Integer)parsedValue.get("vb");
         String bucket = (String)parsedValue.get("bucket");

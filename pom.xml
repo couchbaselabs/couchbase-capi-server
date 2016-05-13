@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>8.1.0.v20120127</version>
+			<version>9.3.8.v20160314</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>

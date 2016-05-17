@@ -28,7 +28,7 @@ import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
@@ -59,10 +59,11 @@ public class CAPIServer extends Server {
     public CAPIServer(CAPIBehavior capiBehavior, CouchbaseBehavior couchbaseBehavior, InetSocketAddress bindAddress, String username, String password, int numVbuckets) {
         super(bindAddress);
 
-        SelectChannelConnector connector0 = new SelectChannelConnector();
+        ServerConnector connector0 = new ServerConnector(this);
         connector0.setHost(bindAddress.getHostName());
         connector0.setPort(bindAddress.getPort());
-        connector0.setRequestBufferSize(32 * 1024);
+        
+//        connector0.setRequestBufferSize(32 * 1024);
 
         setConnectors(new Connector[]{ connector0 });
 
@@ -90,7 +91,7 @@ public class CAPIServer extends Server {
             throw new IllegalStateException("Cannot get port, there are no connectors");
         }
         Connector connector = connectors[0];
-        return connector.getLocalPort();
+        return ((ServerConnector)connector).getLocalPort();
     }
 
     /**

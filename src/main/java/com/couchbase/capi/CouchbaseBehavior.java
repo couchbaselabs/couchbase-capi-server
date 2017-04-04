@@ -28,7 +28,7 @@ public interface CouchbaseBehavior {
 
     String getBucketUUID(String pool, String bucket);
 
-    List<Object> getNodesServingPool(String pool);
+    List<Map<String, Object>> getNodesServingPool(String pool);
 
     Map<String, Object> getStats();
 }

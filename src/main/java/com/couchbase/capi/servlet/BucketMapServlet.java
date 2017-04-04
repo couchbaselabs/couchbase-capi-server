@@ -116,7 +116,7 @@ public class BucketMapServlet extends HttpServlet {
         if(bucketNames != null) {
             for (String bucketName : bucketNames) {
                 String actualBucketUUID = couchbaseBehavior.getBucketUUID(pool, bucketName);
-                List<Object> nodes = couchbaseBehavior.getNodesServingPool(pool);
+                List<Map<String, Object>> nodes = couchbaseBehavior.getNodesServingPool(pool);
                 Map<String, Object> bucket = buildBucketDetailsMap(bucketName, nodes, actualBucketUUID);
                 buckets.add(bucket);
             }
@@ -143,7 +143,7 @@ public class BucketMapServlet extends HttpServlet {
             return;
         }
 
-        List<Object> nodes = couchbaseBehavior.getNodesServingPool(pool);
+        List<Map<String, Object>> nodes = couchbaseBehavior.getNodesServingPool(pool);
 
         if(bucketUUID != null) {
             //if a bucket uuid is provided, make sure it matches the buckets uuid
@@ -160,7 +160,7 @@ public class BucketMapServlet extends HttpServlet {
     }
 
     protected void formatBucket(HttpServletResponse resp, final OutputStream os, final String bucket,
-            List<Object> nodes, String actualBucketUUID) throws IOException {
+            List<Map<String, Object>> nodes, String actualBucketUUID) throws IOException {
 
         if(nodes != null) {
             Map<String, Object> responseMap = buildBucketDetailsMap(bucket,
@@ -173,14 +173,24 @@ public class BucketMapServlet extends HttpServlet {
     }
 
     protected Map<String, Object> buildBucketDetailsMap(final String bucket,
-            List<Object> nodes, String actualBucketUUID) {
+            List<Map<String, Object>> nodes, String actualBucketUUID) {
+
+        // Sort the nodes list by hostname to make sure the nodes map is consistent across requests
+        Collections.sort(nodes, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> node1, Map<String, Object> node2) {
+                String hostname1 = node1.get("hostname").toString();
+                String hostname2 = node2.get("hostname").toString();
+                return hostname1.compareTo(hostname2);
+            }
+        });
+
         List<String> serverList = new ArrayList<>();
-        for (Object node : nodes) {
-            Map<String, Object> nodeObj = (Map<String, Object>)node;
-            serverList.add(nodeObj.get("hostname").toString());
+        for (Map<String, Object> node : nodes) {
+            serverList.add(node.get("hostname").toString());
             //add the bucket name to the node's couchApiBase
-            String couchApiBase = (String)nodeObj.get("couchApiBase");
-            nodeObj.put("couchApiBase", couchApiBase + bucket);
+            String couchApiBase = (String)node.get("couchApiBase");
+            node.put("couchApiBase", couchApiBase + bucket);
         }
 
         // Sort the server list in ascending order to make sure the vBucket map is consistent across requests
@@ -188,7 +198,7 @@ public class BucketMapServlet extends HttpServlet {
 
         List<Object> vBucketMap = new ArrayList<>();
         for(int i=0; i < numVbuckets; i++) {
-            List<Object> vbucket = new ArrayList<Object>();
+            List<Object> vbucket = new ArrayList<>();
             vbucket.add(i%serverList.size());
             vbucket.add(-1);
             vBucketMap.add(vbucket);

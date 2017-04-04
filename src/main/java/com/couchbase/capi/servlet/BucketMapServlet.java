@@ -204,11 +204,11 @@ public class BucketMapServlet extends HttpServlet {
             vBucketMap.add(vbucket);
         }
 
-        Map<String, Object> vbucketServerMap = new HashMap<String, Object>();
+        Map<String, Object> vbucketServerMap = new HashMap<>();
         vbucketServerMap.put("serverList", serverList);
         vbucketServerMap.put("vBucketMap", vBucketMap);
 
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("nodes", nodes);
         responseMap.put("vBucketServerMap", vbucketServerMap);
         responseMap.put("name", bucket);

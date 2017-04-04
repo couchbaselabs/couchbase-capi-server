@@ -15,10 +15,7 @@ package com.couchbase.capi.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -132,7 +129,7 @@ public class BucketMapServlet extends HttpServlet {
     /**
      * Return a fake bucket map for the requested bucket.
      *
-     * @param req
+     * @param resp
      * @param os
      * @param bucket
      * @throws IOException
@@ -163,8 +160,7 @@ public class BucketMapServlet extends HttpServlet {
     }
 
     protected void formatBucket(HttpServletResponse resp, final OutputStream os, final String bucket,
-            List<Object> nodes, String actualBucketUUID) throws IOException, JsonGenerationException,
-            JsonMappingException {
+            List<Object> nodes, String actualBucketUUID) throws IOException {
 
         if(nodes != null) {
             Map<String, Object> responseMap = buildBucketDetailsMap(bucket,
@@ -178,17 +174,19 @@ public class BucketMapServlet extends HttpServlet {
 
     protected Map<String, Object> buildBucketDetailsMap(final String bucket,
             List<Object> nodes, String actualBucketUUID) {
-        List<Object> serverList = new ArrayList<Object>();
+        List<String> serverList = new ArrayList<>();
         for (Object node : nodes) {
             Map<String, Object> nodeObj = (Map<String, Object>)node;
-            serverList.add(nodeObj.get("hostname"));
+            serverList.add(nodeObj.get("hostname").toString());
             //add the bucket name to the node's couchApiBase
             String couchApiBase = (String)nodeObj.get("couchApiBase");
             nodeObj.put("couchApiBase", couchApiBase + bucket);
         }
 
+        // Sort the server list in ascending order to make sure the vBucket map is consistent across requests
+        Collections.sort(serverList);
 
-        List<Object> vBucketMap = new ArrayList<Object>();
+        List<Object> vBucketMap = new ArrayList<>();
         for(int i=0; i < numVbuckets; i++) {
             List<Object> vbucket = new ArrayList<Object>();
             vbucket.add(i%serverList.size());
@@ -207,7 +205,7 @@ public class BucketMapServlet extends HttpServlet {
         responseMap.put("uri", String.format("/pools/default/buckets/%s?bucket_uuid=%s", bucket, actualBucketUUID));
         responseMap.put("uuid", actualBucketUUID);
         responseMap.put("bucketType", "membase");
-	responseMap.put("saslPassword", "");
+	    responseMap.put("saslPassword", "");
 
         List<String> bucketCapabilities = new ArrayList<String>();
         bucketCapabilities.add("couchapi");

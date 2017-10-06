@@ -54,10 +54,10 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
         return null;
     }
 
-    public List<Object> getNodesServingPool(String pool) {
-        List<Object> nodes = null;
+    public List<Map<String, Object>> getNodesServingPool(String pool) {
+        List<Map<String, Object>> nodes = null;
         if("default".equals(pool)) {
-            nodes = new ArrayList<Object>();
+            nodes = new ArrayList<Map<String, Object>>();
 
             Map<String, Object> nodePorts = new HashMap<String, Object>();
             nodePorts.put("direct", 8091);

@@ -62,7 +62,7 @@ public class CAPIServer extends Server {
         ServerConnector connector0 = new ServerConnector(this);
         connector0.setHost(bindAddress.getHostName());
         connector0.setPort(bindAddress.getPort());
-        
+
 //        connector0.setRequestBufferSize(32 * 1024);
 
         setConnectors(new Connector[]{ connector0 });
@@ -122,8 +122,7 @@ public class CAPIServer extends Server {
             publishAddress = guessPublishAddress();
         }
         try {
-            return new URI(String.format("http://%s:%d/", publishAddress,
-                    getPort()));
+            return new URI("http://" + publishAddress + ":" + getPort() + "/");
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }

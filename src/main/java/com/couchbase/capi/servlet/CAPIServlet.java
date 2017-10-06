@@ -164,7 +164,9 @@ public class CAPIServlet extends HttpServlet {
         byte[] buffer = new byte[requestLength];
         IOUtils.readFully(is, buffer, 0, requestLength);
 
-        logger.trace("root special request body was: '{}'", new String(buffer));
+        if (logger.isTraceEnabled()) {
+            logger.trace("root special request body was: '{}'", new String(buffer));
+        }
 
         sendNotFoundResponse(resp, "missing");
     }
@@ -181,7 +183,7 @@ public class CAPIServlet extends HttpServlet {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
                 .readValue(buffer, Map.class);
-        logger.trace("pre replicate parsed value is " + parsedValue);
+        logger.trace("pre replicate parsed value is {}", parsedValue);
 
         int vbucket = (Integer)parsedValue.get("vb");
         String bucket = (String)parsedValue.get("bucket");
@@ -219,7 +221,7 @@ public class CAPIServlet extends HttpServlet {
         @SuppressWarnings("unchecked")
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
                 .readValue(buffer, Map.class);
-        logger.trace("commit for checkpoint parsed value is " + parsedValue);
+        logger.trace("commit for checkpoint parsed value is {}", parsedValue);
 
         int vbucket = (Integer)parsedValue.get("vb");
         String bucket = (String)parsedValue.get("bucket");
@@ -259,7 +261,7 @@ public class CAPIServlet extends HttpServlet {
                     "Only GET operations on / are supported at this time");
         }
 
-        logger.trace("Got " + req.getMethod() + " request for /");
+        logger.trace("Got {} request for /", req.getMethod());
         OutputStream os = resp.getOutputStream();
         resp.setContentType("application/json");
         Map<String, Object> responseMap = capiBehavior.welcome();
@@ -284,7 +286,7 @@ public class CAPIServlet extends HttpServlet {
                     "Only GET/HEAD operations on database are supported at this time");
         }
 
-        logger.trace("Got " + req.getMethod() + " request for " + database);
+        logger.trace("Got {} request for {}", req.getMethod(), database);
 
         OutputStream os = resp.getOutputStream();
 
@@ -319,7 +321,7 @@ public class CAPIServlet extends HttpServlet {
             throw new UnsupportedOperationException("_revs_diff must be POST");
         }
 
-        logger.trace("Got revs diff request for " + database);
+        logger.trace("Got revs diff request for {}", database);
 
         OutputStream os = resp.getOutputStream();
         InputStream is = req.getInputStream();
@@ -328,13 +330,15 @@ public class CAPIServlet extends HttpServlet {
         byte[] buffer = new byte[requestLength];
         IOUtils.readFully(is, buffer, 0, requestLength);
 
-        logger.trace("revs diff request body was {}", new String(buffer));
+        if (logger.isTraceEnabled()) {
+            logger.trace("revs diff request body was {}", new String(buffer));
+        }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
                 .readValue(buffer, Map.class);
 
-        logger.trace("revs diff parsed value is " + parsedValue);
+        logger.trace("revs diff parsed value is {}", parsedValue);
 
         try {
             Map<String, Object> responseMap = capiBehavior.revsDiff(database, parsedValue);
@@ -358,7 +362,7 @@ public class CAPIServlet extends HttpServlet {
                     "_ensure_full_commit must be POST");
         }
 
-        logger.trace("Got ensure full commitf request for " + database);
+        logger.trace("Got ensure full commit request for {}", database);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
         resp.setContentType("application/json");
@@ -405,9 +409,10 @@ public class CAPIServlet extends HttpServlet {
             HttpServletResponse resp, String databaseName, String documentId,
             String documentType) throws IOException, ServletException {
 
-        logger.trace(String.format(
-                "Got document request in database %s document %s type %s",
-                databaseName, documentId, documentType));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Got document request in database {} document {} type {}",
+                new Object[]{databaseName, documentId, documentType});
+        }
 
         if (!(req.getMethod().equals("GET") || req.getMethod().equals("HEAD") || req
                 .getMethod().equals("PUT"))) {
@@ -507,7 +512,7 @@ public class CAPIServlet extends HttpServlet {
 
 
 
-        logger.trace("Got bulk docs request for " + database);
+        logger.trace("Got bulk docs request for {}", database);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
         resp.setContentType("application/json");
@@ -523,7 +528,7 @@ public class CAPIServlet extends HttpServlet {
         Map<String, Object> parsedValue = (Map<String, Object>) mapper
                 .readValue(buffer, Map.class);
 
-        logger.trace("parsed value is " + parsedValue);
+        logger.trace("parsed value is {}", parsedValue);
 
         try {
             List<Object> responseList = capiBehavior.bulkDocs(database, (ArrayList<Map<String, Object>>) parsedValue.get("docs"));

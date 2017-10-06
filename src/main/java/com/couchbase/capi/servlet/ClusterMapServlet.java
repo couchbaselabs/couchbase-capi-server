@@ -112,7 +112,7 @@ public class ClusterMapServlet extends HttpServlet {
      */
     protected void executePoolRequest(HttpServletResponse resp, OutputStream os, String pool, String uuid)
             throws IOException {
-        logger.trace("asked for pool " + pool);
+        logger.trace("asked for pool {}", pool);
 
         Map<String, Object> responseMap = couchbaseBehavior.getPoolDetails(pool);
         if(responseMap != null) {

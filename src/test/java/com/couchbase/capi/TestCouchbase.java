@@ -34,7 +34,7 @@ public class TestCouchbase extends CAPITestCase {
     public void testPools() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools", port));
+        HttpUriRequest request = new HttpGet(localhost("pools"));
 
         HttpResponse response = client.execute(request);
 
@@ -64,12 +64,12 @@ public class TestCouchbase extends CAPITestCase {
         HttpClient client = getClient();
 
         // first access the pool with its uuid
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default?uuid=00000000000000000000000000000000", port));
+        HttpUriRequest request = new HttpGet(localhost("pools/default?uuid=00000000000000000000000000000000"));
         HttpResponse response = client.execute(request);
         validateSuccessfulPoolResponse(response);
 
         // now access it with the wrong uuid
-        request = new HttpGet(String.format("http://localhost:%d/pools/default?uuid=00000000000000000000000000000001", port));
+        request = new HttpGet(localhost("pools/default?uuid=00000000000000000000000000000001"));
         response = client.execute(request);
         validateMissingPoolResponse(response);
 
@@ -107,12 +107,12 @@ public class TestCouchbase extends CAPITestCase {
         HttpClient client = getClient();
 
         // first access the buckets list with the correct uuid
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets?uuid=00000000000000000000000000000000", port));
+        HttpUriRequest request = new HttpGet(localhost("pools/default/buckets?uuid=00000000000000000000000000000000"));
         HttpResponse response = client.execute(request);
         validateSuccessfulBucketsResponse(response);
 
         // now access it with the wrong uuid
-        request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets?uuid=00000000000000000000000000000001", port));
+        request = new HttpGet(localhost("pools/default/buckets?uuid=00000000000000000000000000000001"));
         response = client.execute(request);
         validateMissingBucketsResponse(response);
 
@@ -149,17 +149,17 @@ public class TestCouchbase extends CAPITestCase {
         HttpClient client = getClient();
 
         // first access the bucket with the correct bucket_uuid
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/default?bucket_uuid=00000000000000000000000000000000", port));
+        HttpUriRequest request = new HttpGet(localhost("pools/default/buckets/default?bucket_uuid=00000000000000000000000000000000"));
         HttpResponse response = client.execute(request);
         validateSuccessfulBucketResponse(response);
 
         // now access the bucket with the wrong bucket_uuid
-        request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/default?bucket_uuid=00000000000000000000000000000001", port));
+        request = new HttpGet(localhost("pools/default/buckets/default?bucket_uuid=00000000000000000000000000000001"));
         response = client.execute(request);
         validateMissingBucketResponse(response);
 
         // now access a non-existant bucket
-        request = new HttpGet(String.format("http://localhost:%d/pools/default/buckets/does_not_exist", port));
+        request = new HttpGet(localhost("pools/default/buckets/does_not_exist"));
         response = client.execute(request);
         validateMissingBucketResponse(response);
 

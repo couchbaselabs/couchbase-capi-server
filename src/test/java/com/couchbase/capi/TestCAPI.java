@@ -37,7 +37,7 @@ public class TestCAPI extends CAPITestCase {
     public void testDatabaseHead() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpHead(String.format("http://localhost:%d/default", port));
+        HttpUriRequest request = new HttpHead(localhost("default"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
@@ -48,7 +48,7 @@ public class TestCAPI extends CAPITestCase {
     public void testDatabaseHeadDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpHead(String.format("http://localhost:%d/doesnotexist", port));
+        HttpUriRequest request = new HttpHead(localhost("doesnotexist"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -58,7 +58,7 @@ public class TestCAPI extends CAPITestCase {
 
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default", port));
+        HttpUriRequest request = new HttpGet(localhost("default"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
@@ -82,7 +82,7 @@ public class TestCAPI extends CAPITestCase {
 
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/doesnotexist", port));
+        HttpUriRequest request = new HttpGet(localhost("doesnotexist"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -92,7 +92,7 @@ public class TestCAPI extends CAPITestCase {
 
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpPost(String.format("http://localhost:%d/default/_ensure_full_commit", port));
+        HttpUriRequest request = new HttpPost(localhost("default/_ensure_full_commit"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(201, response.getStatusLine().getStatusCode());
@@ -102,7 +102,7 @@ public class TestCAPI extends CAPITestCase {
 
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpPost(String.format("http://localhost:%d/doesnotexist/_ensure_full_commit", port));
+        HttpUriRequest request = new HttpPost(localhost("doesnotexist/_ensure_full_commit"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -112,7 +112,7 @@ public class TestCAPI extends CAPITestCase {
 
         HttpClient client = getClient();
 
-        HttpPost request = new HttpPost(String.format("http://localhost:%d/default/_revs_diff", port));
+        HttpPost request = new HttpPost(localhost("default/_revs_diff"));
 
         List<String> revs = new ArrayList<String>();
         revs.add("1-abc");
@@ -144,7 +144,7 @@ public class TestCAPI extends CAPITestCase {
     public void testRevsDiffDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpPost request = new HttpPost(String.format("http://localhost:%d/doesnotexist/_revs_diff", port));
+        HttpPost request = new HttpPost(localhost("doesnotexist/_revs_diff"));
 
         List<String> revs = new ArrayList<String>();
         revs.add("1-abc");
@@ -162,7 +162,7 @@ public class TestCAPI extends CAPITestCase {
 
         HttpClient client = getClient();
 
-        HttpPost request = new HttpPost(String.format("http://localhost:%d/default/_bulk_docs", port));
+        HttpPost request = new HttpPost(localhost("default/_bulk_docs"));
 
         Map<String, Object> doc = new HashMap<String, Object>();
         doc.put("_id", "abcdef");
@@ -203,7 +203,7 @@ public class TestCAPI extends CAPITestCase {
     public void testBulkDocsDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpPost request = new HttpPost(String.format("http://localhost:%d/doesnotexist/_bulk_docs", port));
+        HttpPost request = new HttpPost(localhost("doesnotexist/_bulk_docs"));
 
         Map<String, Object> doc = new HashMap<String, Object>();
         doc.put("_id", "abcdef");
@@ -229,7 +229,7 @@ public class TestCAPI extends CAPITestCase {
     public void testGetDocument() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/docid", port));
+        HttpUriRequest request = new HttpGet(localhost("default/docid"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
@@ -254,7 +254,7 @@ public class TestCAPI extends CAPITestCase {
     public void testGetDocumentDatabaseDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/doesnotexist/docid", port));
+        HttpUriRequest request = new HttpGet(localhost("doesnotexist/docid"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -263,7 +263,7 @@ public class TestCAPI extends CAPITestCase {
     public void testGetDocumentDocumentDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/doesnotexist", port));
+        HttpUriRequest request = new HttpGet(localhost("default/doesnotexist"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -272,7 +272,7 @@ public class TestCAPI extends CAPITestCase {
     public void testGetLocalDocument() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/docid", port));
+        HttpUriRequest request = new HttpGet(localhost("default/_local/docid"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
@@ -297,7 +297,7 @@ public class TestCAPI extends CAPITestCase {
     public void testGetLocalDocumentDatabaseDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/doesnotexist/_local/docid", port));
+        HttpUriRequest request = new HttpGet(localhost("doesnotexist/_local/docid"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -306,7 +306,7 @@ public class TestCAPI extends CAPITestCase {
     public void testGetLocalDocumentDocumentDoesNotExist() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/doesnotexist", port));
+        HttpUriRequest request = new HttpGet(localhost("default/_local/doesnotexist"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(404, response.getStatusLine().getStatusCode());
@@ -315,7 +315,7 @@ public class TestCAPI extends CAPITestCase {
     public void testActualGetCheckpointDocument() throws Exception {
         HttpClient client = getClient();
 
-        HttpUriRequest request = new HttpGet(String.format("http://localhost:%d/default/_local/441-0921e80de6603d60b1d553bb7c253def%%2Fbeer-sample%%2Fbeer-sample", port));
+        HttpUriRequest request = new HttpGet(localhost("default/_local/441-0921e80de6603d60b1d553bb7c253def%2Fbeer-sample%2Fbeer-sample"));
         HttpResponse response = client.execute(request);
 
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());

@@ -63,8 +63,7 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
             nodePorts.put("direct", 8091);
 
             Map<String, Object> node = new HashMap<String, Object>();
-            node.put("couchApiBase",
-                    String.format("http://%s/%s", "127.0.0.1", "default"));
+            node.put("couchApiBase", "http://127.0.0.1/default");
             node.put("hostname", 8091);
             node.put("ports", nodePorts);
 
@@ -74,8 +73,7 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
             nodePorts2.put("direct", 8091);
 
             Map<String, Object> node2 = new HashMap<String, Object>();
-            node2.put("couchApiBase",
-                    String.format("http://%s/%s", "127.0.0.2", "default"));
+            node2.put("couchApiBase", "http://127.0.0.2/default");
             node2.put("hostname", 8091);
             node2.put("ports", nodePorts2);
 

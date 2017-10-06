@@ -42,7 +42,7 @@ public abstract class CAPITestCase extends TestCase {
     protected void setUp() throws Exception {
         capiServer.start();
         port = capiServer.getPort();
-        logger.info(String.format("CAPIServer started on port %d", port));
+        logger.info("CAPIServer started on port {}", port);
     }
 
     @Override
@@ -58,4 +58,7 @@ public abstract class CAPITestCase extends TestCase {
         return result;
     }
 
+    protected String localhost(String path) {
+        return "http://localhost:" + port + "/" + path;
+    }
 }

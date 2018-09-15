@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 public class CAPIBehaviorTestImpl implements CAPIBehavior {
 
     public Map<String, Object> welcome() {
-        Map<String,Object> responseMap = new HashMap<String, Object>();
+        Map<String,Object> responseMap = new HashMap<>();
         responseMap.put("welcome", "couchbase-capi-server-test");
         return responseMap;
     }
@@ -38,7 +38,7 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
     public Map<String, Object> getDatabaseDetails(String database) {
         String doesNotExistReason = databaseExists(database);
         if(doesNotExistReason == null) {
-            Map<String, Object> responseMap = new HashMap<String, Object>();
+            Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("db_name", database);
             return responseMap;
         }
@@ -56,20 +56,17 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
     }
 
     public boolean ensureFullCommit(String database) {
-        if("default".equals(database)) {
-            return true;
-        }
-        return false;
+        return "default".equals(database);
     }
 
     public Map<String, Object> revsDiff(String database,
             Map<String, Object> revsMap) {
         if("default".equals(database)) {
-            Map<String, Object> responseMap = new HashMap<String, Object>();
+            Map<String, Object> responseMap = new HashMap<>();
             for (Entry<String, Object> entry : revsMap.entrySet()) {
                 String id = entry.getKey();
                 Object revs = entry.getValue();
-                Map<String, Object> rev = new HashMap<String, Object>();
+                Map<String, Object> rev = new HashMap<>();
                 rev.put("missing", revs);
                 responseMap.put(id, rev);
             }
@@ -82,14 +79,14 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
 
         if("default".equals(database)) {
 
-            List<Object> result = new ArrayList<Object>();
+            List<Object> result = new ArrayList<>();
 
             for (Map<String, Object> doc : docs) {
 
                 String id = (String)doc.get("_id");
                 String rev = (String)doc.get("_rev");
 
-                Map<String, Object> itemResponse = new HashMap<String, Object>();
+                Map<String, Object> itemResponse = new HashMap<>();
                 itemResponse.put("id", id);
                 itemResponse.put("rev", rev);
                 result.add(itemResponse);
@@ -103,7 +100,7 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
     public Map<String, Object> getDocument(String database, String docId) {
         if("default".equals(database)) {
             if("docid".equals(docId)) {
-                Map<String, Object> document = new HashMap<String, Object>();
+                Map<String, Object> document = new HashMap<>();
                 document.put("_id", "docid");
                 document.put("_rev", "1-abc");
                 document.put("value", "test");
@@ -116,13 +113,13 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
     public Map<String, Object> getLocalDocument(String database, String docId) {
         if("default".equals(database)) {
             if("_local/docid".equals(docId)) {
-                Map<String, Object> document = new HashMap<String, Object>();
+                Map<String, Object> document = new HashMap<>();
                 document.put("_id", "_local/docid");
                 document.put("_rev", "1-abc");
                 document.put("value", "test");
                 return document;
             } else if("_local/441-0921e80de6603d60b1d553bb7c253def/beer-sample/beer-sample".equals(docId)) {
-                Map<String, Object> historyItem = new HashMap<String, Object>();
+                Map<String, Object> historyItem = new HashMap<>();
                 historyItem.put("session_id", "121f9c416336108dd0b891a054f9b878");
                 historyItem.put("start_time", "Thu, 30 Aug 2012 18:22:02 GMT");
                 historyItem.put("end_time", "Thu, 30 Aug 2012 18:22:02 GMT");
@@ -132,10 +129,10 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
                 historyItem.put("docs_checked", 10);
                 historyItem.put("docs_written", 10);
 
-                List<Object> history = new ArrayList<Object>();
+                List<Object> history = new ArrayList<>();
                 history.add(historyItem);
 
-                Map<String, Object> document = new HashMap<String, Object>();
+                Map<String, Object> document = new HashMap<>();
                 document.put("session_id", "121f9c416336108dd0b891a054f9b878");
                 document.put("source_last_seq", 10);
                 document.put("start_time", "Thu, 30 Aug 2012 18:22:02 GMT");
@@ -173,7 +170,7 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
         return null;
     }
 
-    public InputStream getLocalAttachment(String databsae, String docId,
+    public InputStream getLocalAttachment(String database, String docId,
             String attachmentName) {
         // FIXME add test
         return null;
@@ -187,7 +184,7 @@ public class CAPIBehaviorTestImpl implements CAPIBehavior {
 
     @Override
     public Map<String, Object> getStats() {
-        return new HashMap<String, Object>();
+        return new HashMap<>();
     }
 
     public String getVBucketUUID(String pool, String bucket, int vbucket) {

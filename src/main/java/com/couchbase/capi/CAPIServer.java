@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -109,7 +109,7 @@ public class CAPIServer extends Server {
 
         Enumeration<InetAddress> ia = ni.getInetAddresses();
         while (ia.hasMoreElements()) {
-            InetAddress elem = (InetAddress) ia.nextElement();
+            InetAddress elem = ia.nextElement();
             if (elem instanceof Inet4Address) {
                 return elem;
             }

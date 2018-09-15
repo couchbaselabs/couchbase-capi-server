@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -85,18 +85,18 @@ public class ClusterMapServlet extends HttpServlet {
      */
     protected void executePoolsRequest(OutputStream os) throws IOException {
         logger.trace("asked for pools");
-        List<Object> pools = new ArrayList<Object>();
+        List<Object> pools = new ArrayList<>();
 
         List<String> poolNames = couchbaseBehavior.getPools();
 
         for (String poolName : poolNames) {
-            Map<String, Object> pool = new HashMap<String, Object>();
+            Map<String, Object> pool = new HashMap<>();
             pool.put("name", poolName);
             pool.put("uri", "/pools/" + poolName + "?uuid=" + couchbaseBehavior.getPoolUUID(poolName));
             pools.add(pool);
         }
 
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("pools", pools);
         responseMap.put("uuid", couchbaseBehavior.getPoolUUID("default"));
 

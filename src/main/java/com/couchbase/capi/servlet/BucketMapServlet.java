@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -89,7 +89,7 @@ public class BucketMapServlet extends HttpServlet {
     protected void executeBucketsRequest(HttpServletResponse resp, OutputStream os, String pool, String uuid) throws IOException {
         logger.trace("asked for bucket list");
 
-        List<Object> buckets = new ArrayList<Object>();
+        List<Object> buckets = new ArrayList<>();
 
         List<String> bucketNames = couchbaseBehavior.getBucketsInPool(pool);
 

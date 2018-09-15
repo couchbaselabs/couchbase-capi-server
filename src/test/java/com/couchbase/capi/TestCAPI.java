@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -114,10 +114,10 @@ public class TestCAPI extends CAPITestCase {
 
         HttpPost request = new HttpPost(localhost("default/_revs_diff"));
 
-        List<String> revs = new ArrayList<String>();
+        List<String> revs = new ArrayList<>();
         revs.add("1-abc");
         revs.add("2-def");
-        Map<String,Object> revsDiff = new HashMap<String,Object>();
+        Map<String,Object> revsDiff = new HashMap<>();
         revsDiff.put("12345", revs);
 
         request.setEntity(new ByteArrayEntity(mapper.writeValueAsBytes(revsDiff)));
@@ -146,10 +146,10 @@ public class TestCAPI extends CAPITestCase {
 
         HttpPost request = new HttpPost(localhost("doesnotexist/_revs_diff"));
 
-        List<String> revs = new ArrayList<String>();
+        List<String> revs = new ArrayList<>();
         revs.add("1-abc");
         revs.add("2-def");
-        Map<String,Object> revsDiff = new HashMap<String,Object>();
+        Map<String,Object> revsDiff = new HashMap<>();
         revsDiff.put("12345", revs);
 
         request.setEntity(new ByteArrayEntity(mapper.writeValueAsBytes(revsDiff)));
@@ -164,19 +164,19 @@ public class TestCAPI extends CAPITestCase {
 
         HttpPost request = new HttpPost(localhost("default/_bulk_docs"));
 
-        Map<String, Object> doc = new HashMap<String, Object>();
+        Map<String, Object> doc = new HashMap<>();
         doc.put("_id", "abcdef");
         doc.put("_rev", "1-xyz");
 
-        Map<String, Object> doc2 = new HashMap<String, Object>();
+        Map<String, Object> doc2 = new HashMap<>();
         doc2.put("_id", "ghijkl");
         doc2.put("_rev", "1-pdr");
 
-        List<Object> docs = new ArrayList<Object>();
+        List<Object> docs = new ArrayList<>();
         docs.add(doc);
         docs.add(doc2);
 
-        Map<String, Object> bulkDocs = new HashMap<String, Object>();
+        Map<String, Object> bulkDocs = new HashMap<>();
         bulkDocs.put("docs", docs);
 
         request.setEntity(new ByteArrayEntity(mapper.writeValueAsBytes(bulkDocs)));
@@ -205,19 +205,19 @@ public class TestCAPI extends CAPITestCase {
 
         HttpPost request = new HttpPost(localhost("doesnotexist/_bulk_docs"));
 
-        Map<String, Object> doc = new HashMap<String, Object>();
+        Map<String, Object> doc = new HashMap<>();
         doc.put("_id", "abcdef");
         doc.put("_rev", "1-xyz");
 
-        Map<String, Object> doc2 = new HashMap<String, Object>();
+        Map<String, Object> doc2 = new HashMap<>();
         doc2.put("_id", "ghijkl");
         doc2.put("_rev", "1-pdr");
 
-        List<Object> docs = new ArrayList<Object>();
+        List<Object> docs = new ArrayList<>();
         docs.add(doc);
         docs.add(doc2);
 
-        Map<String, Object> bulkDocs = new HashMap<String, Object>();
+        Map<String, Object> bulkDocs = new HashMap<>();
         bulkDocs.put("docs", docs);
 
         request.setEntity(new ByteArrayEntity(mapper.writeValueAsBytes(bulkDocs)));

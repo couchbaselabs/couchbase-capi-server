@@ -34,7 +34,7 @@ public class StatsServlet extends HttpServlet {
         Map<String,Object> couchbaseStats = couchbaseBehavior.getStats();
         Map<String, Object> capiStats = capiBehavior.getStats();
 
-        Map<String, Object> resultMap = new HashMap<String,Object>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("couchbase", couchbaseStats);
         resultMap.put("capi", capiStats);
 

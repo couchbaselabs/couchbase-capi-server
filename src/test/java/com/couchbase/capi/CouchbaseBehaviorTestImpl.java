@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -21,7 +21,7 @@ import java.util.Map;
 public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
 
     public List<String> getPools() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         result.add("default");
         return result;
     }
@@ -31,17 +31,17 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
     }
 
     public Map<String, Object> getPoolDetails(String pool) {
-        Map<String, Object> bucket = new HashMap<String, Object>();
+        Map<String, Object> bucket = new HashMap<>();
         bucket.put("uri", "/pools/" + pool + "/buckets?uuid=" + getPoolUUID(pool));
 
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("buckets", bucket);
 
         return responseMap;
     }
 
     public List<String> getBucketsInPool(String pool) {
-        List<String> bucketNameList = new ArrayList<String>();
+        List<String> bucketNameList = new ArrayList<>();
         bucketNameList.add("default");
 
         return bucketNameList;
@@ -57,22 +57,22 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
     public List<Map<String, Object>> getNodesServingPool(String pool) {
         List<Map<String, Object>> nodes = null;
         if("default".equals(pool)) {
-            nodes = new ArrayList<Map<String, Object>>();
+            nodes = new ArrayList<>();
 
-            Map<String, Object> nodePorts = new HashMap<String, Object>();
+            Map<String, Object> nodePorts = new HashMap<>();
             nodePorts.put("direct", 8091);
 
-            Map<String, Object> node = new HashMap<String, Object>();
+            Map<String, Object> node = new HashMap<>();
             node.put("couchApiBase", "http://127.0.0.1/default");
             node.put("hostname", 8091);
             node.put("ports", nodePorts);
 
             nodes.add(node);
 
-            Map<String, Object> nodePorts2 = new HashMap<String, Object>();
+            Map<String, Object> nodePorts2 = new HashMap<>();
             nodePorts2.put("direct", 8091);
 
-            Map<String, Object> node2 = new HashMap<String, Object>();
+            Map<String, Object> node2 = new HashMap<>();
             node2.put("couchApiBase", "http://127.0.0.2/default");
             node2.put("hostname", 8091);
             node2.put("ports", nodePorts2);
@@ -85,7 +85,7 @@ public class CouchbaseBehaviorTestImpl implements CouchbaseBehavior {
 
     @Override
     public Map<String, Object> getStats() {
-        return new HashMap<String, Object>();
+        return new HashMap<>();
     }
 
 }

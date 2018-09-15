@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Couchbase, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -204,7 +204,7 @@ public class CAPIServlet extends HttpServlet {
 
         OutputStream os = resp.getOutputStream();
         resp.setContentType("application/json");
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("vbopaque", vbucketUUID);
         mapper.writeValue(os, responseMap);
     }
@@ -229,7 +229,7 @@ public class CAPIServlet extends HttpServlet {
         String vbopaque = (String)parsedValue.get("vbopaque");
 
         String vbucketUUID = capiBehavior.getVBucketUUID("default", bucket, vbucket);
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("vbopaque", vbucketUUID);
 
         if((vbopaque != null) && (!vbopaque.equals(vbucketUUID))) {
@@ -369,7 +369,7 @@ public class CAPIServlet extends HttpServlet {
 
         if(capiBehavior.ensureFullCommit(database)) {
 
-            Map<String, Object> responseMap = new HashMap<String, Object>();
+            Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("ok", true);
 
             OutputStream os = resp.getOutputStream();
@@ -469,7 +469,7 @@ public class CAPIServlet extends HttpServlet {
             resp.setContentType("application/json");
             OutputStream os = resp.getOutputStream();
 
-            Map<String, Object> responseMap = new HashMap<String, Object>();
+            Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("ok", true);
             responseMap.put("id", documentId);
             responseMap.put("rev", rev);
@@ -484,7 +484,7 @@ public class CAPIServlet extends HttpServlet {
         resp.setContentType("application/json");
         OutputStream os = resp.getOutputStream();
 
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("error", "not_found");
         responseMap.put("reason", doesNotExistReason);
         mapper.writeValue(os, responseMap);
@@ -496,7 +496,7 @@ public class CAPIServlet extends HttpServlet {
         resp.setContentType("application/json");
         OutputStream os = resp.getOutputStream();
 
-        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("error", "service_unavailable");
         responseMap.put("reason", reason);
         mapper.writeValue(os, responseMap);

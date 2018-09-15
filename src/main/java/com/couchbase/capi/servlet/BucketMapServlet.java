@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,8 +109,7 @@ public class BucketMapServlet extends HttpServlet {
     }
 
     protected void formatBuckets(HttpServletResponse resp, OutputStream os, String pool,
-            List<Object> buckets, List<String> bucketNames) throws IOException,
-            JsonGenerationException, JsonMappingException {
+            List<Object> buckets, List<String> bucketNames) throws IOException {
         if(bucketNames != null) {
             for (String bucketName : bucketNames) {
                 String actualBucketUUID = couchbaseBehavior.getBucketUUID(pool, bucketName);
@@ -217,7 +214,7 @@ public class BucketMapServlet extends HttpServlet {
         responseMap.put("bucketType", "membase");
 	    responseMap.put("saslPassword", "");
 
-        List<String> bucketCapabilities = new ArrayList<String>();
+        List<String> bucketCapabilities = new ArrayList<>();
         bucketCapabilities.add("couchapi");
         responseMap.put("bucketCapabilities", bucketCapabilities);
         return responseMap;
